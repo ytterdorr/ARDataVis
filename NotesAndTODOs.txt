@@ -1,6 +1,8 @@
 
 TODO:
 
+Base on max-min values?
+
 # AR:
 - Refactor code. put JS in separate file? 
  - separate bar/text creation from scene add. 
@@ -29,3 +31,4 @@ https://www.dashingd3js.com/lessons/basic-chart-bar-chart
 https://www.dashingd3js.com/intermediate-d3-course
 http://learnjsdata.com/read_data.html
 
+https://flaviocopes.com/how-to-solve-unexpected-identifier-modules/
