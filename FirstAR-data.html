@@ -204,28 +204,56 @@ function initialize()
     
   }
 
+  // Text stuff
+  function createText(text, color="black") {
+    var bitmap = document.createElement('canvas');
+    var g = bitmap.getContext('2d');
+    bitmap.width = 100;
+    bitmap.height = 33;
+    g.font = '20px Arial';
+
+    g.fillStyle = color;
+    g.fillText(text, 0, 20);
+    g.strokeStyle = 'black';
+    g.strokeText(text, 0, 20);
+
+    // canvas contents will be used for a texture
+    var texture = new THREE.Texture(bitmap) 
+    texture.needsUpdate = true;
+
+    var textMaterial = new THREE.MeshBasicMaterial({ map: texture});
+    var textGeometry = new THREE.PlaneGeometry(0.3, 0.1)
+
+    var textPlane = new THREE.Mesh(textGeometry, textMaterial)
+    return textPlane;
+  }
+
   // Insert Country data
   let barMax = 100
   let zPos = -0.5
   for (let elem in lifeExpData) {
-    zPos += 0.1
+    zPos += 0.11
     let country  = lifeExpData[elem]
     
     for (let i=0; i<=9; i++) {
-    let xPos = -0.4 + i/10;
-    let height = country.barData[i]/barMax;
-    let color = country.barColor
-    // Create bars
-    createBar(height, xPos, zPos, color)
-  }
+      let xPos = -0.4 + i/10;
+      let height = country.barData[i]/barMax;
+      let color = country.barColor
+      // Create bars
+      createBar(height, xPos, zPos, color)
+    }
+
+    let name = createText(elem, country.barColor); 
+    name.position.x = -0.7
+    name.position.z = zPos;
+    name.rotation.x = -Math.PI/4
+
+    markerRoot1.add(name);
 
   }
-
-  
  
 
-  // Example line
-
+  // Lines
   let lineMaterial = new THREE.LineBasicMaterial({
 	  color: 0x0000ff,
     linewidth: 0.2,
@@ -243,10 +271,56 @@ function initialize()
     let line = new THREE.Line( lineGeometry, lineMaterial );
     markerRoot1.add( line );
   }
+
+  // Insert reference values
+  let topValue1 = createText(barMax.toString());
+  topValue1.position.x = -0.5;
+  topValue1.position.y = 1;
+  topValue1.position.z = -0.5;
+  let topValue2 = createText(barMax.toString());
+  topValue2.position.x = 0.5;
+  topValue2.position.z = 0.7;
+  topValue2.position.y = 1;
+  topValue2.rotation.y = -Math.PI/2;
+
+  let midValue1 = createText((barMax/2).toString())
+  midValue1.position.x = -0.5;
+  midValue1.position.y = 0.5;
+  midValue1.position.z = -0.5;
+
+  let midValue2 = createText((barMax/2).toString())
+  midValue2.position.x = 0.5;
+  midValue2.position.y = 0.5;
+  midValue2.position.z = 0.7;
+  midValue2.rotation.y = -Math.PI/2;
   
+  markerRoot1.add(topValue1)
+  markerRoot1.add(topValue2)
+  markerRoot1.add(midValue1)
+  markerRoot1.add(midValue2)
+
+  // Add Years
+  let x = -0.4;
+  for (let year = 2010; year<=2018; year++) {
+    let text = createText(" - " +year.toString());
+    text.position.z = 0.65;
+    text.position.y = 0.001
+    text.position.x = x;
+    text.rotation.x = -Math.PI/2;
+    text.rotation.z = -Math.PI/2;
+    // // text.rotation.x = -Math.PI/2;
+    // if (year%2 == 0) {
+    //   text.position.z = 0.6;
+    // }
+    markerRoot1.add(text);
+    x += 0.1;
+  }
 
 
-  
+  // Create title
+  let title = createText("Life Expectancy", "white");
+  title.position.y = 1.2;
+  markerRoot1.add(title);
 
   // Base
   let baseGeometry = new THREE.CubeGeometry(1,0,1);
