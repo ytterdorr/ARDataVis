@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<title>Hello, AR Cube!</title>
+	<!-- include three.js library -->
+	<script src='js/three.js'></script>
+	<!-- include jsartookit -->
+	<script src="jsartoolkit5/artoolkit.min.js"></script>
+	<script src="jsartoolkit5/artoolkit.api.js"></script>
+	<!-- include threex.artoolkit -->
+	<script src="threex/threex-artoolkitsource.js"></script>
+	<script src="threex/threex-artoolkitcontext.js"></script>
+	<script src="threex/threex-arbasecontrols.js"></script>
+	<script src="threex/threex-armarkercontrols.js"></script>
+</head>
+
+<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
+
+<!-- 
+  Example created by Lee Stemkoski: https://github.com/stemkoski
+  Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
+-->
+
+<script>
+
+// country: 2009,2011,2012,2013,2014,2015,2016,2017,2018
+
+let lifeExpData = {
+"Australia":[81.8,82.2,82.3,82.5,82.6,82.6,82.5,82.7,82.9],
+"Gambia": [65.1,66.0,66.3,66.5,66.7,67.0,67.3,67.6,67.8],
+"Germany":[79.9,80.3,80.4,80.5,80.8,80.8,80.9,81.1,81.3],
+"Mexico": [75.4,75.8,75.9,75.8,75.9,76.2,76.4,76.6,76.8],
+"Portugal": [79.6,80.1,80.3,80.5,80.7,80.8,80.9,81.1,81.3],
+"Sweden":[81.3,81.7,81.8,81.9,82.1,82.1,82.0,82.2,82.4],
+"United States":[78.6,78.8,78.9,78.9,78.9,78.8,78.8,79.0,79.1],
+"Vietnam": [72.8,73.3,73.6,73.8,74.1,74.3,74.5,74.7,74.9]
+}
+
+var scene, camera, renderer, clock, deltaTime, totalTime;
+
+var arToolkitSource, arToolkitContext;
+
+var markerRoot1, markerRoot2;
+
+var mesh1;
+
+initialize();
+animate();
+
+function initialize()
+{
+	scene = new THREE.Scene();
+
+	let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.5 );
+	scene.add( ambientLight );
+				
+	camera = new THREE.Camera();
+	scene.add(camera);
+
+	renderer = new THREE.WebGLRenderer({
+		antialias : true,
+		alpha: true
+	});
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+	renderer.setSize( 640, 480 );
+	renderer.domElement.style.position = 'absolute'
+	renderer.domElement.style.top = '0px'
+	renderer.domElement.style.left = '0px'
+	document.body.appendChild( renderer.domElement );
+
+	clock = new THREE.Clock();
+	deltaTime = 0;
+	totalTime = 0;
+	
+	////////////////////////////////////////////////////////////
+	// setup arToolkitSource
+	////////////////////////////////////////////////////////////
+
+	arToolkitSource = new THREEx.ArToolkitSource({
+		sourceType : 'webcam',
+	});
+
+	function onResize()
+	{
+		arToolkitSource.onResize()	
+		arToolkitSource.copySizeTo(renderer.domElement)	
+		if ( arToolkitContext.arController !== null )
+		{
+			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
+		}	
+	}
+
+	arToolkitSource.init(function onReady(){
+		onResize()
+	});
+	
+	// handle resize event
+	window.addEventListener('resize', function(){
+		onResize()
+	});
+	
+	////////////////////////////////////////////////////////////
+	// setup arToolkitContext
+	////////////////////////////////////////////////////////////	
+
+	// create atToolkitContext
+	arToolkitContext = new THREEx.ArToolkitContext({
+		cameraParametersUrl: 'data/camera_para.dat',
+		detectionMode: 'mono'
+	});
+	
+	// copy projection matrix to camera when initialization complete
+	arToolkitContext.init( function onCompleted(){
+		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+	});
+
+	////////////////////////////////////////////////////////////
+	// setup markerRoots
+	////////////////////////////////////////////////////////////
+
+	// build markerControls
+	markerRoot1 = new THREE.Group();
+	scene.add(markerRoot1);
+	let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+		type: 'pattern', patternUrl: "data/hiro.patt",
+	})
+
+
+	// let geometry1	= new THREE.CubeGeometry(1,1,1);
+	// let material1	= new THREE.MeshBasicMaterial({
+  //   color: 0xFFFFFF,
+	// 	side: THREE.DoubleSide
+	// }); 
+  
+    /* TODO:
+  - Set up base
+  - set up text
+  - create barcreating function
+  - set up support lines
+  - import data
+  */
+  // First bar
+  // let barWidth = 0.09;
+  // let barHeight = 0.5;
+  // let barDepth = 0.09;
+  // let firstBarGeometry = new THREE.CubeGeometry(barWidth, barHeight, barDepth);
+  // let firstBarMaterial = new THREE.MeshBasicMaterial({
+  //   color: 0xFF0000
+  // });
+
+  // let firstBar = new THREE.Mesh( firstBarGeometry, firstBarMaterial)
+  // firstBar.position.y = barHeight/2;
+  // firstBar.position.x = -0.4;
+  // firstBar.position.z = -0.4;
+
+  // markerRoot1.add(firstBar)
+  
+  function createBar(height, xPos, zPos, rgbColor) {
+    let barWidth = 0.09;
+    let barHeight = height;
+    let barDepth = 0.09;
+    let firstBarGeometry = new THREE.CubeGeometry(barWidth, barHeight, barDepth);
+    let firstBarMaterial = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(rgbColor)
+    });
+
+    let firstBar = new THREE.Mesh( firstBarGeometry, firstBarMaterial)
+    let edgeGeometry = new THREE.EdgesGeometry( firstBar.geometry ); // or WireframeGeometry
+    var material = new THREE.LineBasicMaterial( { color: 0xFFFFFF, linewidth: 1 } );
+    var edges = new THREE.LineSegments( edgeGeometry, material );
+    firstBar.add( edges ); // add wireframe as a child of the parent mesh
+    firstBar.position.y = barHeight/2;
+    firstBar.position.x = xPos;
+    firstBar.position.z = zPos;
+
+    markerRoot1.add(firstBar)
+    
+  }
+
+  // Insert sweden data
+  swedenHeights = lifeExpData.Sweden;
+  aussieHeights = lifeExpData.Australia;
+  for (let i=0; i<=9; i++) {
+    let swedenHeight = swedenHeights[i]/100
+    let aussieHeight = aussieHeights[i]/100
+    let xPos = -0.4 + i/10
+    let szPos = -0.4
+    let azPos = -0.3
+    let swedenColor = "rgb(100, 100, 200)"
+    let aussieColor = "rgb(200, 200, 0)"
+    // Create bars
+    createBar(swedenHeight, xPos, szPos, swedenColor)
+    createBar(aussieHeight, xPos, azPos, aussieColor)
+
+
+  }
+ 
+
+  // Example line
+
+  let lineMaterial = new THREE.LineBasicMaterial({
+	  color: 0x0000ff,
+    linewidth: 0.2,
+    opacity: 0.5,
+    transparent: true
+  });
+  for (let height = 0; height<= 1; height+= 0.1) {
+    let lineGeometry = new THREE.Geometry();
+      lineGeometry.vertices.push(
+      new THREE.Vector3( -0.5, height, -0.5 ),
+      new THREE.Vector3( 0.5, height, -0.5 ),
+      new THREE.Vector3( 0.5, height, 0.5 )
+    );
+
+    let line = new THREE.Line( lineGeometry, lineMaterial );
+    markerRoot1.add( line );
+  }
+  
+
+
+  
+
+  // Base
+  let baseGeometry = new THREE.CubeGeometry(1,0,1);
+	let baseMaterial	= new THREE.MeshBasicMaterial({
+    color: 0xFFFFFF,
+		side: THREE.DoubleSide
+	}); 
+  
+	var base = new THREE.Mesh( baseGeometry, baseMaterial );
+	// base.position.y = 0.05;
+	
+	markerRoot1.add( base );
+	// markerRoot1.add( firstBar );
+}
+
+
+function update()
+{
+	// update artoolkit on every frame
+	if ( arToolkitSource.ready !== false )
+		arToolkitContext.update( arToolkitSource.domElement );
+}
+
+
+function render()
+{
+	renderer.render( scene, camera );
+}
+
+
+function animate()
+{
+	requestAnimationFrame(animate);
+	deltaTime = clock.getDelta();
+	totalTime += deltaTime;
+	update();
+	render();
+}
+
+</script>
+
+</body>
+</html>
