@@ -26,14 +26,39 @@
 // country: 2009,2011,2012,2013,2014,2015,2016,2017,2018
 
 let lifeExpData = {
-"Australia":[81.8,82.2,82.3,82.5,82.6,82.6,82.5,82.7,82.9],
-"Gambia": [65.1,66.0,66.3,66.5,66.7,67.0,67.3,67.6,67.8],
-"Germany":[79.9,80.3,80.4,80.5,80.8,80.8,80.9,81.1,81.3],
-"Mexico": [75.4,75.8,75.9,75.8,75.9,76.2,76.4,76.6,76.8],
-"Portugal": [79.6,80.1,80.3,80.5,80.7,80.8,80.9,81.1,81.3],
-"Sweden":[81.3,81.7,81.8,81.9,82.1,82.1,82.0,82.2,82.4],
-"United States":[78.6,78.8,78.9,78.9,78.9,78.8,78.8,79.0,79.1],
-"Vietnam": [72.8,73.3,73.6,73.8,74.1,74.3,74.5,74.7,74.9]
+"Australia":{
+  "barData": [81.8,82.2,82.3,82.5,82.6,82.6,82.5,82.7,82.9],
+  "barColor": "rgb(200, 200, 0)" // Yellow
+},
+"Gambia":{
+  "barData": [65.1,66.0,66.3,66.5,66.7,67.0,67.3,67.6,67.8],
+  "barColor":  "rgb(230, 0, 0)" // Red
+}, 
+"Germany": {
+  "barData": [79.9,80.3,80.4,80.5,80.8,80.8,80.9,81.1,81.3],
+  "barColor": "rgb(0, 230, 0)" // Green
+},
+"Mexico": {
+  "barData": [75.4,75.8,75.9,75.8,75.9,76.2,76.4,76.6,76.8],
+  "barColor:": "rgb(200, 100, 0)" // Orange?
+},
+"Portugal": {
+
+  "barData": [79.6,80.1,80.3,80.5,80.7,80.8,80.9,81.1,81.3],
+  "barColor": "skyblue"
+},
+"Sweden":{
+  "barData": [81.3,81.7,81.8,81.9,82.1,82.1,82.0,82.2,82.4],
+  "barColor": "rgb(100, 100, 200)"
+},
+"United States": {
+  "barData": [78.6,78.8,78.9,78.9,78.9,78.8,78.8,79.0,79.1], 
+  "barColor": "rgb(200, 200, 200)"
+},
+"Vietnam": {
+  "barData": [72.8,73.3,73.6,73.8,74.1,74.3,74.5,74.7,74.9],
+  "barColor": "rgb(0, 200, 200)"
+}
 }
 
 var scene, camera, renderer, clock, deltaTime, totalTime;
@@ -161,12 +186,14 @@ function initialize()
     let barDepth = 0.09;
     let firstBarGeometry = new THREE.CubeGeometry(barWidth, barHeight, barDepth);
     let firstBarMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(rgbColor)
+      color: new THREE.Color(rgbColor),
+      opacity: 0.8,
+      transparent: true
     });
 
     let firstBar = new THREE.Mesh( firstBarGeometry, firstBarMaterial)
     let edgeGeometry = new THREE.EdgesGeometry( firstBar.geometry ); // or WireframeGeometry
-    var material = new THREE.LineBasicMaterial( { color: 0xFFFFFF, linewidth: 1 } );
+    var material = new THREE.LineBasicMaterial( { color: 0xAAAAAA, linewidth: 1, opacity: 1, transparent: true } );
     var edges = new THREE.LineSegments( edgeGeometry, material );
     firstBar.add( edges ); // add wireframe as a child of the parent mesh
     firstBar.position.y = barHeight/2;
@@ -177,23 +204,24 @@ function initialize()
     
   }
 
-  // Insert sweden data
-  swedenHeights = lifeExpData.Sweden;
-  aussieHeights = lifeExpData.Australia;
-  for (let i=0; i<=9; i++) {
-    let swedenHeight = swedenHeights[i]/100
-    let aussieHeight = aussieHeights[i]/100
-    let xPos = -0.4 + i/10
-    let szPos = -0.4
-    let azPos = -0.3
-    let swedenColor = "rgb(100, 100, 200)"
-    let aussieColor = "rgb(200, 200, 0)"
+  // Insert Country data
+  let barMax = 100
+  let zPos = -0.5
+  for (let elem in lifeExpData) {
+    zPos += 0.1
+    let country  = lifeExpData[elem]
+    
+    for (let i=0; i<=9; i++) {
+    let xPos = -0.4 + i/10;
+    let height = country.barData[i]/barMax;
+    let color = country.barColor
     // Create bars
-    createBar(swedenHeight, xPos, szPos, swedenColor)
-    createBar(aussieHeight, xPos, azPos, aussieColor)
-
+    createBar(height, xPos, zPos, color)
+  }
 
   }
+
+  
  
 
   // Example line
