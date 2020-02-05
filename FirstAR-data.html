@@ -23,7 +23,33 @@
 -->
 
 <script>
-// Load data
+
+function parseDataToObject(data) {
+  // Basiclly load the data graph.
+  let rows = data.split("\n");
+  // Skip the index row
+  rows = rows.slice(1)
+  let countryData = {}
+  let colors = ["blue", "yellow", "red", "green", "skyblue", "olive", "orchid", "silver", "tomato"]
+  let colorIndex = 0;
+  
+  // Get row data
+  for (let i in rows) { 
+    row = rows[i].split(",")
+    let countryName = row[0]; 
+    let data = row.slice(1)
+    // Store in countryData object
+    countryData[countryName] = {
+      barData: data,
+      barColor: colors[colorIndex]
+    }
+    // Update color index
+    colorIndex += 1;
+  } 
+  console.log(countryData)
+}
+
+
 console.log("TODO load data")
 let getData = function(fileURL) {
   $.ajax({
@@ -31,12 +57,17 @@ let getData = function(fileURL) {
     success: function(data) {
       // Parse data
       console.log("Got some file")
-      console.log(data)
+      // console.log(data)
+      parseDataToObject(data)
     }
+  }).fail(function() {
+    console.log("Failed to get data")
   })
 }
 
 getData("test.csv")
+
+
 
 // country: 2009,2011,2012,2013,2014,2015,2016,2017,2018
 
