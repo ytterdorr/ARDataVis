@@ -14,7 +14,7 @@ def main(input_file, output_file):
   head = data.head()
 
   countryList = ["United States", "Mexico", "Portugal", "Germany", "Vietnam", "Gambia", "Sweden", "Australia"]
-  years = ["2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018" ]
+  years = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018" ]
   columns = ["country"] + years
   selectedCountries =  data.loc[data["country"].isin(countryList), columns]
   selectedCountries.set_index("country", inplace=True)

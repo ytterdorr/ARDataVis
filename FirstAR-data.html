@@ -18,54 +18,14 @@
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
 
 <!-- 
-  Example created by Lee Stemkoski: https://github.com/stemkoski
+  How much of this have I created?
+  Built off examples created by Lee Stemkoski: https://github.com/stemkoski
   Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
 -->
 
 <script>
 
-function parseDataToObject(data) {
-  // Basiclly load the data graph.
-  let rows = data.split("\n");
-  // Skip the index row
-  rows = rows.slice(1)
-  let countryData = {}
-  let colors = ["blue", "yellow", "red", "green", "skyblue", "olive", "orchid", "silver", "tomato"]
-  let colorIndex = 0;
-  
-  // Get row data
-  for (let i in rows) { 
-    row = rows[i].split(",")
-    let countryName = row[0]; 
-    let data = row.slice(1)
-    // Store in countryData object
-    countryData[countryName] = {
-      barData: data,
-      barColor: colors[colorIndex]
-    }
-    // Update color index
-    colorIndex += 1;
-  } 
-  console.log(countryData)
-}
 
-
-console.log("TODO load data")
-let getData = function(fileURL) {
-  $.ajax({
-    url: fileURL,
-    success: function(data) {
-      // Parse data
-      console.log("Got some file")
-      // console.log(data)
-      parseDataToObject(data)
-    }
-  }).fail(function() {
-    console.log("Failed to get data")
-  })
-}
-
-getData("test.csv")
 
 
 
@@ -254,8 +214,8 @@ function initialize()
   function createText(text, color="black") {
     var bitmap = document.createElement('canvas');
     var g = bitmap.getContext('2d');
-    bitmap.width = 100;
-    bitmap.height = 33;
+    bitmap.width = 128;
+    bitmap.height = 32;
     g.font = '20px Arial';
 
     g.fillStyle = color;
@@ -276,27 +236,32 @@ function initialize()
 
   // Insert Country data
   let barMax = 100
-  let zPos = -0.5
-  for (let elem in lifeExpData) {
-    zPos += 0.11
-    let country  = lifeExpData[elem]
-    
-    for (let i=0; i<=9; i++) {
-      let xPos = -0.4 + i/10;
-      let height = country.barData[i]/barMax;
-      let color = country.barColor
-      // Create bars
-      createBar(height, xPos, zPos, color)
+  function insertCountryData(countryData) {
+    console.log("Insert country data")
+    console.log(countryData)
+    let zPos = -0.5
+    for (let elem in countryData) {
+      zPos += 0.11
+      let country  = countryData[elem]
+      console.log(country)
+      for (let i=0; i<=9; i++) {
+        let xPos = -0.4 + i/10;
+        let height = country.barData[i]/barMax;
+        let color = country.barColor
+        // Create bars
+        createBar(height, xPos, zPos, color)
+      }
+
+      let name = createText(elem, country.barColor); 
+      name.position.x = -0.7
+      name.position.z = zPos;
+      name.rotation.x = -Math.PI/4
+
+      markerRoot1.add(name);
+
     }
-
-    let name = createText(elem, country.barColor); 
-    name.position.x = -0.7
-    name.position.z = zPos;
-    name.rotation.x = -Math.PI/4
-
-    markerRoot1.add(name);
-
   }
+  
  
 
   // Lines
@@ -380,6 +345,59 @@ function initialize()
 	
 	markerRoot1.add( base );
 	// markerRoot1.add( firstBar );
+
+
+  function parseDataToObject(data) {
+  // Basiclly load the data graph.
+  let rows = data.split("\n");
+  // Skip the index row
+  rows = rows.slice(1)
+  let countryData = {}
+  let colors = ["blue", "yellow", "red", "green", "skyblue", "olive", "orchid", "silver", "tomato"]
+  let colorIndex = 0;
+  
+  // Get row data
+  for (let i in rows) { 
+    row = rows[i].split(",")
+    let countryName = row[0]; 
+    let data = row.slice(1)
+    // Store in countryData object
+    countryData[countryName] = {
+      barData: data,
+      barColor: colors[colorIndex]
+    }
+    // Update color index
+    colorIndex += 1;
+  } 
+  // console.log(countryData)
+  return countryData;
+}
+
+function build3DGraph(data) {
+  let countryData = parseDataToObject(data);
+  insertCountryData(countryData);
+}
+
+/****************
+* Load the data * 
+****************/
+
+console.log("TODO load data")
+let getData = function(fileURL) {
+  $.ajax({
+    url: fileURL,
+    success: function(data) {
+      // Parse data
+      console.log("Got some file")
+      // console.log(data)
+      build3DGraph(data)
+    }
+  }).fail(function() {
+    console.log("Failed to get data")
+  })
+}
+
+getData("test.csv")
 }
 
 
