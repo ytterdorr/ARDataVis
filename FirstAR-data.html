@@ -11,7 +11,8 @@
 	<script src="threex/threex-artoolkitsource.js"></script>
 	<script src="threex/threex-artoolkitcontext.js"></script>
 	<script src="threex/threex-arbasecontrols.js"></script>
-	<script src="threex/threex-armarkercontrols.js"></script>
+  <script src="threex/threex-armarkercontrols.js"></script>
+  <script src="js/jquery-3.4.1.min.js"></script>
 </head>
 
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
@@ -22,6 +23,20 @@
 -->
 
 <script>
+// Load data
+console.log("TODO load data")
+let getData = function(fileURL) {
+  $.ajax({
+    url: fileURL,
+    success: function(data) {
+      // Parse data
+      console.log("Got some file")
+      console.log(data)
+    }
+  })
+}
+
+getData("test.csv")
 
 // country: 2009,2011,2012,2013,2014,2015,2016,2017,2018
 
