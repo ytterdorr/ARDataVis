@@ -1,36 +1,52 @@
 .axis {
-        font: 10px sans-serif;
-      }
+  font: 10px sans-serif;
+}
 
-      .axis path,
-      .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-      }
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
 
-      .container {
-        display: flex;
-        width: 80vw;
-        height: 80vh;
-        background-color: #ddd;
-      }
+.container {
+  display: flex;
+  width: 80vw;
+  height: 80vh;
+  background-color: #ddd;
+  margin: auto;
+}
 
-      .leftside {
-        width: 50%;
-        height: 100%;
-        background-color: #abc;
-      }
+.leftside {
+  width: 50%;
+  height: 100%;
+  background-color: #abc;
+}
 
-      .rightside {
-        width: 50%;
-        height: 100%;
-        background-color: #a94;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+.rightside {
+  width: 50%;
+  height: 100%;
+  background-color: #a94;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-      .rightside > svg {
-        background-color: #fff;
-      }
+.rightside > svg {
+  background-color: #fff;
+}
+
+.loadingscreen {
+  /* background-color: #fff; */
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 99;
+}
+
+.invisible {
+  display: none;
+}

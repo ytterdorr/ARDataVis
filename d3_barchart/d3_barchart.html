@@ -9,16 +9,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
   </head>
   <body></body>
-
-  <div class="container">
+  <div class="loadingscreen"><h1>Loading...</h1></div>
+  <div class="container invisible">
     <div class="leftside"></div>
     <div class="rightside"></div>
   </div>
 
   <script>
     var csvFile = "../test.csv";
-    var currentCountry = "Vietnam";
-    let YMAX = 100;
+    var currentCountry = "Gambia";
+    var YMAX = 100;
+    let dataset;
+    // To check if dataset is set;
+    let dataLoaded = false;
+    let countryData;
 
     var margin = { top: 20, right: 20, bottom: 70, left: 40 },
       width = 400 - margin.left - margin.right,
@@ -41,7 +45,10 @@
       .domain(years)
       .rangeRoundBands([0, width], 0.05);
 
-    var y = d3.scale.linear().range([height, 0]);
+    var y = d3.scale
+      .linear()
+      .domain([0, YMAX])
+      .range([height, 0]);
 
     var xAxis = d3.svg
       .axis()
@@ -54,13 +61,56 @@
       .orient("left")
       .ticks(10);
 
-    var svg = d3
+    var right_svg = d3
       .select(".rightside")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var drawBars = function(svg, data) {
+      svg
+        .append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", "-.55em")
+        .attr("transform", "rotate(-90)");
+
+      svg
+        .append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(currentCountry); // Country name
+
+      svg
+        .selectAll("bar")
+        .data(data)
+        .enter()
+        .append("rect")
+        .style("fill", "steelblue")
+        .attr("x", function(d) {
+          // console.log(d);
+          return x(d.year);
+        })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) {
+          console.log(d.value);
+          return y(d.value);
+        })
+        .attr("height", function(d) {
+          return height - y(d.value);
+        });
+    };
 
     var getDataByCountry = function(data, country) {
       let countryData;
@@ -94,56 +144,15 @@
 
     d3.csv(csvFile, function(error, data) {
       console.log("Got data:", data);
-      let finishedData = getDataByCountry(data, currentCountry);
-      console.log("Did I get " + currentCountry + "?", finishedData);
+      dataset = data;
+      let countryData = getDataByCountry(data, currentCountry);
+      console.log("Did I get " + currentCountry + "?", countryData);
+      // Draw the bars
+      drawBars(right_svg, countryData);
 
-      // TODO Get max y value
-      let yMax = getMaxYValue(data);
-      console.log("yMax:", yMax);
-
-      x.domain(years);
-      y.domain([0, YMAX]);
-
-      svg
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-        .selectAll("text")
-        .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", "-.55em")
-        .attr("transform", "rotate(-90)");
-
-      svg
-        .append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text(currentCountry); // Country name
-
-      svg
-        .selectAll("bar")
-        .data(finishedData)
-        .enter()
-        .append("rect")
-        .style("fill", "steelblue")
-        .attr("x", function(d) {
-          // console.log(d);
-          return x(d.year);
-        })
-        .attr("width", x.rangeBand())
-        .attr("y", function(d) {
-          console.log(d.value);
-          return y(d.value);
-        })
-        .attr("height", function(d) {
-          return height - y(d.value);
-        });
+      // To the loading screen
+      document.querySelector(".loadingscreen").classList.add("invisible");
+      document.querySelector(".container").classList.remove("invisible");
     });
   </script>
 </html>
