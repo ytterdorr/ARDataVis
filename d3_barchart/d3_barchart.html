@@ -1,48 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>D3 Barchart</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>D3 Barchart</title>
-    <style>
-      .axis {
-        font: 10px sans-serif;
-      }
-
-      .axis path,
-      .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-      }
-
-      .container {
-        display: flex;
-        width: 80vw;
-        height: 80vh;
-        background-color: #ddd;
-      }
-
-      .leftside {
-        width: 50%;
-        height: 100%;
-        background-color: #abc;
-      }
-
-      .rightside {
-        width: 50%;
-        height: 100%;
-        background-color: #a94;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .rightside > svg {
-        background-color: #fff;
-      }
-    </style>
+    <link rel="stylesheet" href="d3BarStyle.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
   </head>
   <body></body>
@@ -53,12 +16,14 @@
   </div>
 
   <script>
+    var csvFile = "../test.csv";
+    var currentCountry = "Vietnam";
+    let YMAX = 100;
+
     var margin = { top: 20, right: 20, bottom: 70, left: 40 },
       width = 400 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
 
-    // // Parse the date / time
-    // var parseDate = d3.time.format("%Y-%m").parse;
     let years = [
       "2010",
       "2011",
@@ -76,16 +41,12 @@
       .domain(years)
       .rangeRoundBands([0, width], 0.05);
 
-    console.log("x range", x.range());
-
     var y = d3.scale.linear().range([height, 0]);
 
     var xAxis = d3.svg
       .axis()
       .scale(x)
       .orient("bottom");
-    // Should I change this?
-    // .tickFormat(d3.time.format("%Y-%m"));
 
     var yAxis = d3.svg
       .axis()
@@ -102,34 +63,46 @@
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var getDataByCountry = function(data, country) {
-      for (let el in data) {
-        if (data[el]["country"] == country) {
-          return data[el];
-        }
-      }
+      let countryData;
+      // Find the right country data
+      countryData = data.filter(d => d.country == country)[0];
+      // Format object for easier d3 handling
+      let formattedData = years.map(y => {
+        return { year: y, value: countryData[y] };
+      });
+      return formattedData;
     };
 
-    d3.csv("test.csv", function(error, data) {
-      console.log("Got data:", data);
-      let countryData = getDataByCountry(data, "Germany");
-      // console.log("Did I get Australia?", countryData);
-
-      let finishedData = [];
-      for (let i in years) {
-        let year = years[i];
-        // console.log(year);
-        let newDataObj = {};
-        newDataObj["year"] = year;
-        newDataObj["data"] = +countryData[year];
-        finishedData.push(newDataObj);
+    var getMaxYValue = function(data) {
+      // Get max max Y value from data.
+      // Basically, go through all the years and
+      // store the largest value
+      let maxVal = 0;
+      let loopObj;
+      for (let i in data) {
+        loopObj = data[i];
+        console.log(loopObj);
+        for (let y in years) {
+          let year = years[y];
+          if (loopObj[year] > maxVal) {
+            maxVal = loopObj[year];
+          }
+        }
       }
-      // console.log("finishedData", finishedData);
+      return maxVal;
+    };
 
-      let yearData = years.map(d => countryData[d]);
-      // console.log("yearData", yearData);
+    d3.csv(csvFile, function(error, data) {
+      console.log("Got data:", data);
+      let finishedData = getDataByCountry(data, currentCountry);
+      console.log("Did I get " + currentCountry + "?", finishedData);
+
+      // TODO Get max y value
+      let yMax = getMaxYValue(data);
+      console.log("yMax:", yMax);
 
       x.domain(years);
-      y.domain([0, 10]);
+      y.domain([0, YMAX]);
 
       svg
         .append("g")
@@ -151,7 +124,7 @@
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text(countryData.country); // Country name
+        .text(currentCountry); // Country name
 
       svg
         .selectAll("bar")
@@ -165,11 +138,11 @@
         })
         .attr("width", x.rangeBand())
         .attr("y", function(d) {
-          console.log(d.data);
-          return y(d.data);
+          console.log(d.value);
+          return y(d.value);
         })
         .attr("height", function(d) {
-          return height - y(d.data);
+          return height - y(d.value);
         });
     });
   </script>
