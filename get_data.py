@@ -21,7 +21,7 @@ def main(input_file, output_file):
   print selectedCountries
   # for country in countryList:
   #   print head.loc[head["country"] == country]
-  selectedCountries.to_csv(ouf)
+  selectedCountries.to_csv(output_file)
 
 
 if __name__ == "__main__":
