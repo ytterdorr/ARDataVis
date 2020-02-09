@@ -1,0 +1,14 @@
+TODO:
+
+FirstAR:
+- Refactor code. put JS in separate file? 
+ - separate bar/text creation from scene add. 
+- Implement use of 2nd marker.
+
+
+2D
+- Use D3.JS
+- 2 fields, 10 rows. 
+- Load from file.
+- square size differs with value.  
+
