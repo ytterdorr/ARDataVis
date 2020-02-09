@@ -7,8 +7,13 @@ FirstAR:
 
 
 2D
-- Use D3.JS
+=0> Use D3.JS
 - 2 fields, 10 rows. 
-- Load from file.
+=0= Load from file.
 - square size differs with value.  
 
+Notes:
+https://d3-wiki.readthedocs.io/zh_CN/master/Ordinal-Scales/
+https://www.dashingd3js.com/lessons/basic-chart-bar-chart
+https://www.dashingd3js.com/intermediate-d3-course
+http://learnjsdata.com/read_data.html
