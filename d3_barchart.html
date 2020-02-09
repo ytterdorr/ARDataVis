@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>D3 Barchart</title>
+    <style>
+      .axis {
+        font: 10px sans-serif;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      .container {
+        display: flex;
+        width: 80vw;
+        height: 80vh;
+        background-color: #ddd;
+      }
+
+      .leftside {
+        width: 50%;
+        height: 100%;
+        background-color: #abc;
+      }
+
+      .rightside {
+        width: 50%;
+        height: 100%;
+        background-color: #a94;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .rightside > svg {
+        background-color: #fff;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+  </head>
+  <body></body>
+
+  <div class="container">
+    <div class="leftside"></div>
+    <div class="rightside"></div>
+  </div>
+
+  <script>
+    var margin = { top: 20, right: 20, bottom: 70, left: 40 },
+      width = 400 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+
+    // // Parse the date / time
+    // var parseDate = d3.time.format("%Y-%m").parse;
+    let years = [
+      "2010",
+      "2011",
+      "2012",
+      "2013",
+      "2014",
+      "2015",
+      "2016",
+      "2017",
+      "2018"
+    ];
+
+    var x = d3.scale
+      .ordinal()
+      .domain(years)
+      .rangeRoundBands([0, width], 0.05);
+
+    console.log("x range", x.range());
+
+    var y = d3.scale.linear().range([height, 0]);
+
+    var xAxis = d3.svg
+      .axis()
+      .scale(x)
+      .orient("bottom");
+    // Should I change this?
+    // .tickFormat(d3.time.format("%Y-%m"));
+
+    var yAxis = d3.svg
+      .axis()
+      .scale(y)
+      .orient("left")
+      .ticks(10);
+
+    var svg = d3
+      .select(".rightside")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var getDataByCountry = function(data, country) {
+      for (let el in data) {
+        if (data[el]["country"] == country) {
+          return data[el];
+        }
+      }
+    };
+
+    d3.csv("test.csv", function(error, data) {
+      console.log("Got data:", data);
+      let countryData = getDataByCountry(data, "Germany");
+      // console.log("Did I get Australia?", countryData);
+
+      let finishedData = [];
+      for (let i in years) {
+        let year = years[i];
+        // console.log(year);
+        let newDataObj = {};
+        newDataObj["year"] = year;
+        newDataObj["data"] = +countryData[year];
+        finishedData.push(newDataObj);
+      }
+      // console.log("finishedData", finishedData);
+
+      let yearData = years.map(d => countryData[d]);
+      // console.log("yearData", yearData);
+
+      x.domain(years);
+      y.domain([0, 10]);
+
+      svg
+        .append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", "-.55em")
+        .attr("transform", "rotate(-90)");
+
+      svg
+        .append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(countryData.country); // Country name
+
+      svg
+        .selectAll("bar")
+        .data(finishedData)
+        .enter()
+        .append("rect")
+        .style("fill", "steelblue")
+        .attr("x", function(d) {
+          // console.log(d);
+          return x(d.year);
+        })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) {
+          console.log(d.data);
+          return y(d.data);
+        })
+        .attr("height", function(d) {
+          return height - y(d.data);
+        });
+    });
+  </script>
+</html>
