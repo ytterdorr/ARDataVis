@@ -17,10 +17,22 @@
   margin: auto;
 }
 
+.white-background {
+  background-color: #fff;
+}
+
+/* .dataRect {
+  display: none;
+} */
+
 .leftside {
   width: 50%;
+  min-width: 600px;
   height: 100%;
   background-color: #abc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .rightside {
@@ -32,7 +44,8 @@
   align-items: center;
 }
 
-.rightside > svg {
+.rightside > svg,
+.leftside > svg {
   background-color: #fff;
 }
 

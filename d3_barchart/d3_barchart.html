@@ -20,25 +20,19 @@
     var currentCountry = "Gambia";
     var YMAX = 100;
     let dataset;
+    let years;
+    let countries;
+
     // To check if dataset is set;
     let dataLoaded = false;
     let countryData;
 
     var margin = { top: 20, right: 20, bottom: 70, left: 40 },
       width = 400 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+      leftWidth = width + 100;
+    height = 400 - margin.top - margin.bottom;
 
-    let years = [
-      "2010",
-      "2011",
-      "2012",
-      "2013",
-      "2014",
-      "2015",
-      "2016",
-      "2017",
-      "2018"
-    ];
+    // TODO make this generated from the dataset.
 
     var x = d3.scale
       .ordinal()
@@ -49,6 +43,16 @@
       .linear()
       .domain([0, YMAX])
       .range([height, 0]);
+
+    var leftY = d3.scale
+      .ordinal()
+      .domain(countries)
+      .rangeRoundBands([0, height], 0.05);
+
+    var leftYAxis = d3.svg
+      .axis()
+      .scale(leftY)
+      .orient("left");
 
     var xAxis = d3.svg
       .axis()
@@ -66,6 +70,15 @@
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var left_svg = d3
+      .select(".leftside")
+      .append("svg")
+      .attr("width", leftWidth + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("style", "background-color: white;")
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -111,6 +124,109 @@
           return height - y(d.value);
         });
     };
+    var calcuateSquares = function(svg, dataset) {
+      // Takes a d3 svg as canvas, and a complete dataset
+      let totalwidth = width / 10;
+      let margin = totalwidth / 10;
+      let x_pos = 0;
+      let ypos = 0;
+      let positions = [];
+      for (let i in range(10)) {
+        let pos = {};
+      }
+    };
+
+    var selectRectangle = function(event) {
+      console.log("rectangle clicked", event);
+      d3.selectAll(".dataRectangle").attr("stroke", "black");
+    };
+
+    var drawRects = function(svg, dataset) {
+      let yaxisMargin = 40;
+      let rectYMargin = 7;
+
+      let squaresMargin = yaxisMargin + 5;
+      let rectHeight = height / 10;
+      let rectWidth = height + 18;
+      let y = 7;
+      for (let i in countries) {
+        svg
+          .append("rect")
+          .attr("x", squaresMargin)
+          .attr("y", y)
+          .attr("width", rectWidth)
+          .attr("height", rectHeight)
+          .attr("fill", "none")
+          // .attr("opacity", "0.5")
+          .attr("stroke", "red")
+          .attr("stroke-width", "2")
+          .attr("class", "dataRect");
+        y += rectHeight + rectYMargin;
+      }
+
+      svg
+        .append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + yaxisMargin + ", 0)")
+        .call(leftYAxis);
+
+      svg
+        .append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(" + yaxisMargin + "," + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", "-.55em")
+        .attr("transform", "rotate(-90)");
+    };
+
+    function makeCountryIndexed(dataset) {
+      let byCountry = {};
+      let row;
+      let yearData;
+      for (let i in dataset) {
+        yearData = [];
+        row = dataset[i];
+        for (let j in years) {
+          yearData.push(row[years[i]]);
+        }
+        console.log("yearData", yearData);
+        byCountry[row.country] = yearData;
+      }
+      console.log("byCountry", byCountry);
+      return byCountry;
+    }
+
+    var drawSquares = function(svg, dataset) {
+      let yAxisMargin = 40;
+      let x;
+      let squareWidth = 28;
+      let boxMargin = 9;
+      let boxYMargin = 10;
+      let y = 8;
+
+      let maxValue = getMaxYValue(dataset);
+      // console.log("Dataset:", dataset);
+
+      for (let c in countries) {
+        x = yAxisMargin + boxMargin;
+        for (let i = 0; i < 9; i++) {
+          svg
+            .append("rect")
+            .attr("width", squareWidth)
+            .attr("height", squareWidth)
+            .attr("x", x)
+            .attr("y", y)
+            .attr("fill", "none")
+            // .attr("opacity", "0.1")
+            .attr("stroke", "black");
+          x += squareWidth + boxMargin;
+        }
+        y += squareWidth + boxYMargin;
+      }
+    };
 
     var getDataByCountry = function(data, country) {
       let countryData;
@@ -142,17 +258,56 @@
       return maxVal;
     };
 
+    function extractYears(data) {
+      let first = data[0];
+      let keys = Object.keys(first);
+      let years = keys.filter(d => d != "country");
+      years.sort();
+      return years;
+    }
+
+    function extractCountries(data) {
+      // Get all the countries from the csv data.
+      // Input is d3.read_csv of the data.
+      let row;
+      let countryList = [];
+      for (let el in data) {
+        row = data[el];
+        countryList.push(row.country);
+      }
+      countryList.sort();
+      return countryList;
+    }
+
     d3.csv(csvFile, function(error, data) {
-      console.log("Got data:", data);
+      // console.log("Got data:", data);
+      countries = extractCountries(data);
+      // Extract years
+      years = extractYears(data);
+
       dataset = data;
       let countryData = getDataByCountry(data, currentCountry);
-      console.log("Did I get " + currentCountry + "?", countryData);
+
       // Draw the bars
-      drawBars(right_svg, countryData);
+      // drawBars(right_svg, countryData);
+
+      // let reorderedData = makeCountryIndexed(data);
+
+      // drawRects(left_svg, dataset);
+      // drawSquares(left_svg, dataset);
 
       // To the loading screen
       document.querySelector(".loadingscreen").classList.add("invisible");
       document.querySelector(".container").classList.remove("invisible");
     });
+
+    /*****
+     * TODO
+     * - Make another svg
+     * - make a square grid (10 * 10) or 9*9?
+     * - put squares inside
+     * - resize based on data
+     * - Make axes, both ordinal.
+     ****/
   </script>
 </html>
