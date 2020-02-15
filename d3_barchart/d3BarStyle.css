@@ -63,3 +63,7 @@
 .invisible {
   display: none;
 }
+
+.dataRect {
+  pointer-events: bounding-box; 
+}
