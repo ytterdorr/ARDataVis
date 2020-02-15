@@ -44,14 +44,9 @@
       leftWidth = width + 100;
     height = 400 - margin.top - margin.bottom;
 
-    // TODO make this generated from the dataset.
-
-    // depends on years and countries being set
-    // To be called from the read_csv callback function.
-    // Or should I just set the domain later?
     var x = d3.scale
       .ordinal()
-      // .domain(years)
+      // .domain(years), is set once data is loaded
       .rangeRoundBands([0, width], 0.05);
 
     var y = d3.scale
@@ -61,7 +56,7 @@
 
     var leftY = d3.scale
       .ordinal()
-      // .domain(countries)
+      // .domain(countries), is set once data is loaded
       .rangeRoundBands([0, height], 0.05);
 
     var leftYAxis = d3.svg
@@ -137,56 +132,47 @@
           return height - y(d.value);
         });
     };
-    var calcuateSquares = function(svg, dataset) {
-      // Takes a d3 svg as canvas, and a complete dataset
-      let totalwidth = width / 10;
-      let margin = totalwidth / 10;
-      let x_pos = 0;
-      let ypos = 0;
-      let positions = [];
-      for (let i in range(10)) {
-        let pos = {};
-      }
-    };
 
-    var selectRectangle = function(event) {
+    var selectRectangle = function(rect) {
       console.log("rectangle clicked", event);
-      d3.selectAll(".dataRectangle").attr("stroke", "black");
+      d3.selectAll(".dataRect").attr("visible", false);
+      d3.select(rect).attr("visible", true);
     };
 
     var drawRects = function(svg, dataset) {
-      let yaxisMargin = 40;
+      let yAxisMargin = 40;
       let rectYMargin = 7;
 
-      let squaresMargin = yaxisMargin + 5;
+      let squaresMargin = yAxisMargin + 5;
       let rectHeight = height / 10;
       let rectWidth = height + 18;
       let y = 7;
       for (let i in countries) {
         svg
           .append("rect")
-          .attr("x", squaresMargin)
+          .attr("x", yAxisMargin + 7)
           .attr("y", y)
           .attr("width", rectWidth)
           .attr("height", rectHeight)
-          .attr("fill", "none")
+          .attr("fill", "white")
           // .attr("opacity", "0.5")
           .attr("stroke", "red")
           .attr("stroke-width", "2")
-          .attr("class", "dataRect");
+          .attr("class", "dataRect")
+          .attr("onclick", "selectRectangle(this)");
         y += rectHeight + rectYMargin;
       }
 
       svg
         .append("g")
         .attr("class", "y axis")
-        .attr("transform", "translate(" + yaxisMargin + ", 0)")
+        .attr("transform", "translate(" + yAxisMargin + ", 0)")
         .call(leftYAxis);
 
       svg
         .append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(" + yaxisMargin + "," + height + ")")
+        .attr("transform", "translate(" + yAxisMargin + "," + height + ")")
         .call(xAxis)
         .selectAll("text")
         .style("text-anchor", "end")
@@ -214,14 +200,13 @@
 
     var drawSquares = function(svg, dataset) {
       // Draw the square grid that frames the data
-      let yAxisMargin = 40;
       let x;
+      let y = 8;
+      let yAxisMargin = 40;
       let squareWidth = 28;
       let boxMargin = 9;
       let boxYMargin = 10;
-      let y = 8;
 
-      let maxValue = getMaxYValue(dataset);
       let countryIndexed = makeCountryIndexed(dataset);
       let country;
       for (let c in countries) {
@@ -245,30 +230,21 @@
     };
 
     // Draw data
-
-    var dataSquares;
     function drawDataInGrid(svg, dataset) {
-      /* Test: Draw one square
-      then draw one row
-      then draw all of the data.
-      */
       let countryIndexed = makeCountryIndexed(dataset);
-      let data = countryIndexed.Australia;
 
       let yAxisMargin = 40;
-      let x;
+      let xCenter;
       let yCenter = 22;
       let boxWidth = 28;
       let boxXMargin = 9;
       let boxYMargin = 10;
-      let maxValue = getMaxYValue(dataset);
-      console.log("AussieData: ", data);
+      let maxValue = YMAX; //getMaxYValue(dataset);
       let country;
       for (let i in countries) {
         country = countries[i];
         color = colors[i];
-        console.log(country);
-        x = yAxisMargin + boxXMargin + boxWidth / 2;
+        xCenter = yAxisMargin + boxXMargin + boxWidth / 2;
 
         svg
           .selectAll(country + "Data")
@@ -281,42 +257,16 @@
           .attr("height", d => (d / maxValue) * boxWidth)
           .attr("x", function(d) {
             console.log(country, d);
-            let pos = x - (d / maxValue) * (boxWidth / 2);
-            x += boxWidth + boxXMargin;
+            let pos = xCenter - (d / maxValue) * (boxWidth / 2);
+            xCenter += boxWidth + boxXMargin;
             return pos;
           })
           .attr("y", d => yCenter - ((d / maxValue) * boxWidth) / 2)
           .attr("fill", color);
-        // console.log(data[country]);
-        // for (let j in countryIndexed[country]) {
-        //   // console.log(data[country]);
-        //   svg
-        //     .append("rect")
-        //     .attr("width", "15")
-        //     .attr("height", "15")
-        //     .attr("x", x)
-        //     .attr("y", y)
-        //     .attr("fill", "orange");
-        //   x += boxWidth + boxXMargin;
-        // }
+
+        // Update y pos for next row
         yCenter += boxWidth + boxYMargin;
       }
-      // dataSquares = svg
-      //   .selectAll("dSquare")
-      //   .data(data)
-      //   .enter()
-      //   .append("rect")
-      //   .attr("width", d => d * 3)
-      //   .attr("height", d => d * 3)
-      //   .attr("x", function(d) {
-      //     let pos = xCenter - d / 2;
-      //     x += boxWidth;
-      //     return pos;
-      //   })
-      //   .attr("y", y)
-      //   .attr("fill", "blue");
-
-      // console.log("dataSquares:", dataSquares);
     }
 
     var getDataByCountry = function(data, country) {
@@ -390,22 +340,13 @@
 
       // let reorderedData = makeCountryIndexed(data);
 
-      drawRects(left_svg, dataset);
       drawSquares(left_svg, dataset);
       drawDataInGrid(left_svg, dataset);
+      drawRects(left_svg, dataset);
 
       // Toggle loading screen
       document.querySelector(".loadingscreen").classList.add("invisible");
       document.querySelector(".container").classList.remove("invisible");
     });
-
-    /*****
-     * TODO
-     * - Make another svg
-     * - make a square grid (10 * 10) or 9*9?
-     * - put squares inside
-     * - resize based on data
-     * - Make axes, both ordinal.
-     ****/
   </script>
 </html>
