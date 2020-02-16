@@ -74,6 +74,8 @@ var csvFile = "../test.csv";
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+    // Draw the bar diagram
     var drawBars = function(svg, data) {
       svg
         .append("g")
@@ -91,6 +93,7 @@ var csvFile = "../test.csv";
         .attr("class", "y axis")
         .call(yAxis)
         .append("text")
+        .attr("id", "yCountryName")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
         .attr("dy", ".71em")
@@ -121,9 +124,36 @@ var csvFile = "../test.csv";
       // console.log("rectangle clicked", event);
       // d3.selectAll(".dataRect").attr("visible", false);
       // d3.select(rect).attr("visible", true);
+      let countryName = d3.select(this).attr("country")
+      let countryData = getDataByCountry(dataset, countryName)
+      // update bars
+      updateBars(countryData, countryName)
 
       console.log(d3.select(this).attr("country"));
     };
+
+    var updateBars = function(countryData, countryName) {
+      let svg = right_svg;
+
+      // update yAxis name
+
+      let yText = svg.selectAll("#yCountryName").text(countryName)
+      console.log("yText", yText)
+      // Update bars
+      let olds = svg.selectAll("rect")
+      .data(countryData)
+      .attr("x", function(d) {
+        return x(d.year);
+      })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) {
+        return y(d.value);
+      })
+      .attr("height", function(d) {
+        return height - y(d.value);
+      });
+
+    }
 
     var drawRects = function(svg, dataset) {
       let yAxisMargin = 40;
