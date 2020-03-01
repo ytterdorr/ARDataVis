@@ -1,19 +1,30 @@
+
 TODO:
 
-FirstAR:
+# AR:
 - Refactor code. put JS in separate file? 
  - separate bar/text creation from scene add. 
-- Implement use of 2nd marker.
+=x (Implement use of 2nd marker.)
+- Use 10 countries? Change to same countries and years as example article. (25 min)
 
+# 3D on screen
+- Implement same three.js as in AR.
+- implement rotation on scroll? (25 min)
 
-2D
+# 2D
 =0> Use D3.JS
 - 2 fields, 10 rows. 
 =0= Load from file.
-- square size differs with value.  
+=0= square size differs with value.
+- Make years and countries clickable
+  - Mark both vertical or horizontal lines
+  - Load year data for all countries (and keep colors)  
+- Change to better colors. 
+
 
 Notes:
 https://d3-wiki.readthedocs.io/zh_CN/master/Ordinal-Scales/
 https://www.dashingd3js.com/lessons/basic-chart-bar-chart
 https://www.dashingd3js.com/intermediate-d3-course
 http://learnjsdata.com/read_data.html
+
