@@ -74,8 +74,8 @@ var left_svg = d3
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Draw the bar diagram
-var drawBars = function(svg, data) {
+var drawRightAxes = function() {
+  let svg = right_svg;
   svg
     .append("g")
     .attr("class", "x axis")
@@ -98,7 +98,10 @@ var drawBars = function(svg, data) {
     .attr("dy", ".71em")
     .style("text-anchor", "end")
     .text(currentCountry); // Country name
+};
 
+// Draw the bar diagram
+var drawBars = function(svg, data) {
   svg
     .selectAll("bar")
     .data(data)
@@ -131,7 +134,7 @@ var selectRectangle = function() {
   let countryName = d3.select(this).attr("country");
   let countryData = getDataByCountry(dataset, countryName);
   // update bars
-  updateBars(countryData, countryName);
+  drawCountryBars(countryData, countryName);
 
   console.log(d3.select(this).attr("country"));
 };
@@ -141,13 +144,24 @@ var drawCountryBars = function(countryData, countryName) {
   // Since I also want to be able to do this by years.
   let svg = right_svg;
 
+  // Delete everything and draw axes.
+  right_svg.selectAll("g").remove();
+  x.domain(years);
+  drawRightAxes();
+
   // update yAxis name
   let yText = svg.selectAll("#yName").text(countryName);
   console.log("yText", yText);
-  // Update bars
-  let olds = svg
-    .selectAll("rect")
+
+  // Delete remaining rectangles?
+  svg.selectAll("rect").remove();
+
+  // Draw new bars
+  let news = svg
+    .selectAll("bar")
     .data(countryData)
+    .enter()
+    .append("rect")
     .attr("x", function(d) {
       return x(d.year);
     })
@@ -157,44 +171,65 @@ var drawCountryBars = function(countryData, countryName) {
     })
     .attr("height", function(d) {
       return height - y(d.value);
-    });
+    })
+    .attr("fill", "steelblue");
+  console.log("news:", news);
 };
 
-function showYearData() {
+function showYearData(year) {
   /* This function should change the right side
    * diagram to show all countries from a certain year
    * instead of all years for a certain country.
    */
 
-  let year = "2011";
-  // Update x labels
+  // Delete everything and draw axes.
+  right_svg.selectAll("g").remove();
   x.domain(countries);
-  right_svg
-    .select(".x")
-    .call(xAxis)
-    .selectAll("text")
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", "-.55em")
-    .attr("transform", "rotate(-90)");
+  drawRightAxes();
 
   // update Y axis name
-  right_svg.select("#yName").text("2018");
+  right_svg.select("#yName").text(year);
+
+  // Delete remaining rectangles?
+  right_svg.selectAll("rect").remove();
 
   // Get year data.
   // console.log("dataset:", dataset);
   let yearData = [];
+  let colorIndex = 0;
   for (d of dataset) {
     // console.log(d.country);
-    let country = d.country;
+    // let country = d.country;
     let obj = {};
     obj.country = d.country;
-    obj.data = d[year];
+    obj.value = d[year];
+    obj.color = colors[colorIndex];
     console.log(obj);
     yearData.push(obj);
-
-    // Continue HERE
+    colorIndex++;
   }
+
+  // Continue HERE
+  let news = right_svg
+    .selectAll("bar")
+    .data(yearData)
+    .enter()
+    .append("rect")
+    .attr("x", function(d) {
+      console.log("x(d.country):", x(d.country));
+      return x(d.country);
+    })
+    .attr("width", x.rangeBand())
+    .attr("y", function(d) {
+      return y(d.value);
+    })
+    .attr("height", function(d) {
+      return height - y(d.value);
+    })
+    .attr("fill", function(d) {
+      console.log(d.color);
+      return d.color;
+    });
 }
 
 var updateBars = function(countryData, countryName) {
@@ -447,14 +482,15 @@ d3.csv(csvFile, function(error, data) {
   let countryData = getDataByCountry(data, currentCountry);
 
   // Draw the bars
-  drawBars(right_svg, countryData);
+  // drawRightAxes();
+  showYearData("2011");
+  // drawBars(right_svg, countryData);
 
   // let reorderedData = makeCountryIndexed(data);
   drawLeftAxes();
   drawSquares(left_svg, dataset);
   drawDataInGrid(left_svg, dataset);
   drawRects(left_svg, dataset);
-  showYearData();
 
   // Toggle loading screen
   document.querySelector(".loadingscreen").classList.add("invisible");
