@@ -41,10 +41,20 @@ var leftY = d3.scale
   // .domain(countries), is set once data is loaded
   .rangeRoundBands([0, height], 0.05);
 
+var leftX = d3.scale
+  .ordinal()
+  // .domain(years), is set once data is loaded
+  .rangeRoundBands([0, width], 0.05);
+
 var leftYAxis = d3.svg
   .axis()
   .scale(leftY)
   .orient("left");
+
+var leftXAxis = d3.svg
+  .axis()
+  .scale(leftX)
+  .orient("bottom");
 
 var xAxis = d3.svg
   .axis()
@@ -194,12 +204,9 @@ function showYearData(year) {
   right_svg.selectAll("rect").remove();
 
   // Get year data.
-  // console.log("dataset:", dataset);
   let yearData = [];
   let colorIndex = 0;
   for (d of dataset) {
-    // console.log(d.country);
-    // let country = d.country;
     let obj = {};
     obj.country = d.country;
     obj.value = d[year];
@@ -209,7 +216,6 @@ function showYearData(year) {
     colorIndex++;
   }
 
-  // Continue HERE
   let news = right_svg
     .selectAll("bar")
     .data(yearData)
@@ -319,7 +325,7 @@ function drawLeftAxes() {
     .append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(" + yAxisMargin + "," + height + ")")
-    .call(xAxis)
+    .call(leftXAxis)
     .selectAll("text")
     .style("text-anchor", "end")
     .attr("dx", "-.8em")
@@ -346,32 +352,34 @@ function makeCountryIndexed(dataset) {
 
 var drawSquares = function(svg, dataset) {
   // Draw the square grid that frames the data
-  let x;
-  let y = 8;
+  let xPos;
   let yAxisMargin = 40;
-  let squareWidth = 28;
-  let boxMargin = 9;
-  let boxYMargin = 10;
+  let boxMargin = 8;
+  let boxYMargin = 6;
 
-  let countryIndexed = makeCountryIndexed(dataset);
-  let country;
+  let squareWidth = x.rangeBand() - boxMargin - 2;
+  let squareHeight = leftY.rangeBand() - boxYMargin;
+  let y = boxYMargin;
+
+  // let countryIndexed = makeCountryIndexed(dataset);
+  // let country;
   for (let c in countries) {
-    x = yAxisMargin + boxMargin;
+    xPos = yAxisMargin + boxMargin;
     country = countries[c];
     for (let i = 0; i < 9; i++) {
       svg
         .append("rect")
         .attr("width", squareWidth)
-        .attr("height", squareWidth)
-        .attr("x", x)
+        .attr("height", squareHeight)
+        .attr("x", xPos)
         .attr("y", y)
         .attr("fill", "none")
         .attr("stroke", "black");
       // Update x pos
-      x += squareWidth + boxMargin;
+      xPos += squareWidth + boxMargin - 1;
     }
     // Update y pos
-    y += squareWidth + boxYMargin;
+    y += squareHeight + boxYMargin + 2;
   }
 };
 
@@ -476,6 +484,7 @@ d3.csv(csvFile, function(error, data) {
 
   // set axis domains
   x.domain(years);
+  leftX.domain(years);
   leftY.domain(countries);
 
   dataset = data;
