@@ -1,4 +1,4 @@
-var csvFile = "../test.csv";
+var csvFile = "../test_LE.csv";
 var currentCountry = "Australia";
 var YMAX = 100;
 let dataset;
@@ -14,7 +14,8 @@ var colors = [
   "silver",
   "gold",
   "blue",
-  "yellow"
+  "yellow",
+  "green"
 ];
 
 // To check if dataset is set;
@@ -110,6 +111,39 @@ var drawRightAxes = function() {
     .text(currentCountry); // Country name
 };
 
+function drawLeftAxes() {
+  let svg = left_svg;
+  let yAxisMargin = 40;
+  svg
+    .append("g")
+    .attr("class", "y axis")
+    .attr("transform", "translate(" + yAxisMargin + ", 0)")
+    .call(leftYAxis);
+
+  svg
+    .append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(" + yAxisMargin + "," + height + ")")
+    .call(leftXAxis)
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", "-.55em")
+    .attr("transform", "rotate(-90)");
+}
+
+function drawSupportLines() {
+  console.log(yAxis);
+  right_svg
+    .selectAll(".y.axis")
+    .selectAll(".tick line")
+    .call(yAxis)
+    .attr("x1", -6)
+    .attr("x2", width)
+    .attr("stroke", "gray")
+    .attr("opacity", "0.7");
+}
+
 // Draw the bar diagram
 var drawBars = function(svg, data) {
   svg
@@ -177,6 +211,7 @@ var drawCountryBars = function(countryData, countryName) {
   right_svg.selectAll("g").remove();
   x.domain(years);
   drawRightAxes();
+  drawSupportLines();
 
   // update yAxis name
   let yText = svg.selectAll("#yName").text(countryName);
@@ -215,6 +250,7 @@ function showYearData(year) {
   right_svg.selectAll("g").remove();
   x.domain(countries);
   drawRightAxes();
+  drawSupportLines();
 
   // update Y axis name
   right_svg.select("#yName").text(year);
@@ -257,34 +293,34 @@ function showYearData(year) {
     });
 }
 
-var updateBars = function(countryData, countryName) {
-  let svg = right_svg;
+// var updateBars = function(countryData, countryName) {
+//   let svg = right_svg;
 
-  // update yAxis name
-  let yText = svg.selectAll("#yName").text(countryName);
+//   // update yAxis name
+//   let yText = svg.selectAll("#yName").text(countryName);
 
-  // Update bars
-  let olds = svg
-    .selectAll("rect")
-    .data(countryData)
-    .attr("x", function(d) {
-      return x(d.year);
-    })
-    .attr("width", x.rangeBand())
-    .attr("y", function(d) {
-      return y(d.value);
-    })
-    .attr("height", function(d) {
-      return height - y(d.value);
-    });
-};
+//   // Update bars
+//   let olds = svg
+//     .selectAll("rect")
+//     .data(countryData)
+//     .attr("x", function(d) {
+//       return x(d.year);
+//     })
+//     .attr("width", x.rangeBand())
+//     .attr("y", function(d) {
+//       return y(d.value);
+//     })
+//     .attr("height", function(d) {
+//       return height - y(d.value);
+//     });
+// };
 
 var drawRects = function(svg, dataset) {
   let yAxisMargin = 40;
   let rectYMargin = 7;
 
   let squaresMargin = yAxisMargin + 5;
-  let rectHeight = height / 10;
+  let rectHeight = leftY.rangeBand();
   let rectWidth = height + 18;
   let y = 7;
 
@@ -315,9 +351,9 @@ var drawRects = function(svg, dataset) {
       .attr("x", -yAxisMargin)
       .attr("y", y - 1)
       .attr("width", 2 * yAxisMargin)
-      .attr("height", rectHeight + 2)
-      .attr("fill", "blue")
-      .attr("opacity", "0.5")
+      .attr("height", rectHeight)
+      .attr("fill", "white")
+      .attr("opacity", "0")
       .attr("stroke", "red")
       .attr("stroke-width", "3")
       .attr("class", "dataRect")
@@ -326,7 +362,7 @@ var drawRects = function(svg, dataset) {
       .on("click", selectRectangle)
       .attr("visible", "false");
 
-    y += rectHeight + rectYMargin;
+    y += rectHeight + 1;
   }
 
   // Year clickable rects
@@ -341,7 +377,7 @@ var drawRects = function(svg, dataset) {
       .attr("width", xWidth)
       .attr("height", yAxisMargin)
       .attr("fill", "white")
-      .attr("opacity", "0.5")
+      .attr("opacity", "0")
       .attr("stroke", "red")
       .attr("stroke-width", "3")
       .attr("class", "dataRect")
@@ -352,27 +388,6 @@ var drawRects = function(svg, dataset) {
     xPos += leftX.rangeBand() + 2;
   }
 };
-
-function drawLeftAxes() {
-  let svg = left_svg;
-  let yAxisMargin = 40;
-  svg
-    .append("g")
-    .attr("class", "y axis")
-    .attr("transform", "translate(" + yAxisMargin + ", 0)")
-    .call(leftYAxis);
-
-  svg
-    .append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(" + yAxisMargin + "," + height + ")")
-    .call(leftXAxis)
-    .selectAll("text")
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", "-.55em")
-    .attr("transform", "rotate(-90)");
-}
 
 // Transfrom the dataset to a dictionary
 // {country: [data]}
@@ -400,7 +415,7 @@ function drawDataInGrid(svg, dataset) {
   let yCenter = 22;
   let boxXMargin = 9;
   let boxWidth = leftX.rangeBand() - boxXMargin + 2;
-  let boxYMargin = 10;
+  let boxYMargin = 6;
   let maxValue = YMAX; //getMaxYValue(dataset);
   let country;
   for (let i in countries) {
@@ -450,7 +465,7 @@ function drawDataInGrid(svg, dataset) {
       .attr("fill", color);
 
     // Update y pos for next row
-    yCenter += boxWidth + boxYMargin;
+    yCenter += leftY.rangeBand() + 1;
   }
 }
 
@@ -465,23 +480,23 @@ var getDataByCountry = function(data, country) {
   return formattedData;
 };
 
-var getMaxYValue = function(data) {
-  // Get max max Y value from data.
-  // Basically, go through all the years and
-  // store the largest value
-  let maxVal = 0;
-  let loopObj;
-  for (let i in data) {
-    loopObj = data[i];
-    for (let y in years) {
-      let year = years[y];
-      if (loopObj[year] > maxVal) {
-        maxVal = loopObj[year];
-      }
-    }
-  }
-  return maxVal;
-};
+// var getMaxYValue = function(data) {
+//   // Get max max Y value from data.
+//   // Basically, go through all the years and
+//   // store the largest value
+//   let maxVal = 0;
+//   let loopObj;
+//   for (let i in data) {
+//     loopObj = data[i];
+//     for (let y in years) {
+//       let year = years[y];
+//       if (loopObj[year] > maxVal) {
+//         maxVal = loopObj[year];
+//       }
+//     }
+//   }
+//   return maxVal;
+// };
 
 function extractYears(data) {
   // Get a year list from the dataset
@@ -521,13 +536,12 @@ d3.csv(csvFile, function(error, data) {
   let countryData = getDataByCountry(data, currentCountry);
 
   // Draw the bars
-  // drawRightAxes();
-  showYearData("2011");
-  // drawBars(right_svg, countryData);
+  drawRightAxes();
+  drawSupportLines();
+  drawBars(right_svg, countryData);
 
   // let reorderedData = makeCountryIndexed(data);
   drawLeftAxes();
-  // drawSquares(left_svg, dataset);
   drawDataInGrid(left_svg, dataset);
   drawRects(left_svg, dataset);
 

@@ -7,4 +7,6 @@ Date  # START #  END  # Activity #
 
 02/03 : 00:57 : 02:18 : Make country name clickable. Started working on displaying by years.  
 02/03 : 10.23 : 10:30 : Some minutes during lab time.
-02/02 : 14.15 : 15.00 : Working on displaying years indexed data. 2D
+02/03 : 14.15 : 15.00 : Working on displaying years indexed data. 2D
+02/03 : 15.30 : 17.00 : Year is now clickable. Next: Try with other data.
+02/03 : 17.35 :
