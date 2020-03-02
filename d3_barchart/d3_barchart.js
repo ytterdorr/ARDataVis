@@ -149,6 +149,25 @@ var selectRectangle = function() {
   console.log(d3.select(this).attr("country"));
 };
 
+var selectYear = function() {
+  console.log("You clicked a year!");
+  console.log(this.getAttribute("year"));
+  let year = this.getAttribute("year");
+
+  // hide rectangles
+  left_svg
+    .selectAll(".dataRect")
+    .attr("fill", "white")
+    .attr("opacity", "0");
+
+  d3.select(this)
+    .attr("fill", "none")
+    .attr("stroke", "orange")
+    .attr("stroke-width", "3")
+    .attr("opacity", "0.8");
+  showYearData(year);
+};
+
 var drawCountryBars = function(countryData, countryName) {
   // This is just a copy of the updateBars function.
   // Since I also want to be able to do this by years.
@@ -161,7 +180,7 @@ var drawCountryBars = function(countryData, countryName) {
 
   // update yAxis name
   let yText = svg.selectAll("#yName").text(countryName);
-  console.log("yText", yText);
+  // console.log("yText", yText);
 
   // Delete remaining rectangles?
   svg.selectAll("rect").remove();
@@ -183,7 +202,7 @@ var drawCountryBars = function(countryData, countryName) {
       return height - y(d.value);
     })
     .attr("fill", "steelblue");
-  console.log("news:", news);
+  // console.log("news:", news);
 };
 
 function showYearData(year) {
@@ -211,7 +230,7 @@ function showYearData(year) {
     obj.country = d.country;
     obj.value = d[year];
     obj.color = colors[colorIndex];
-    console.log(obj);
+    // console.log(obj);
     yearData.push(obj);
     colorIndex++;
   }
@@ -222,7 +241,7 @@ function showYearData(year) {
     .enter()
     .append("rect")
     .attr("x", function(d) {
-      console.log("x(d.country):", x(d.country));
+      // console.log("x(d.country):", x(d.country));
       return x(d.country);
     })
     .attr("width", x.rangeBand())
@@ -233,7 +252,7 @@ function showYearData(year) {
       return height - y(d.value);
     })
     .attr("fill", function(d) {
-      console.log(d.color);
+      // console.log(d.color);
       return d.color;
     });
 }
@@ -242,9 +261,8 @@ var updateBars = function(countryData, countryName) {
   let svg = right_svg;
 
   // update yAxis name
-
   let yText = svg.selectAll("#yName").text(countryName);
-  console.log("yText", yText);
+
   // Update bars
   let olds = svg
     .selectAll("rect")
@@ -272,12 +290,12 @@ var drawRects = function(svg, dataset) {
 
   for (let i in countries) {
     country = countries[i];
-    console.log("rect Country", country);
+    // console.log("rect Country", country);
 
     // horizontal selection rects.
     svg
       .append("rect")
-      .attr("x", yAxisMargin + 7)
+      .attr("x", yAxisMargin + rectYMargin)
       .attr("y", y - 1)
       .attr("width", rectWidth)
       .attr("height", rectHeight + 2)
@@ -309,6 +327,29 @@ var drawRects = function(svg, dataset) {
       .attr("visible", "false");
 
     y += rectHeight + rectYMargin;
+  }
+
+  // Year clickable rects
+  let xPos = yAxisMargin + rectYMargin;
+  let xMargin = 5;
+  let xWidth = leftX.rangeBand() - xMargin;
+  for (let year of years) {
+    svg
+      .append("rect")
+      .attr("x", xPos)
+      .attr("y", height)
+      .attr("width", xWidth)
+      .attr("height", yAxisMargin)
+      .attr("fill", "white")
+      .attr("opacity", "0.5")
+      .attr("stroke", "red")
+      .attr("stroke-width", "3")
+      .attr("class", "dataRect")
+      // .attr("onclick", "selectRectangle")
+      .attr("year", year)
+      .on("click", selectYear)
+      .attr("visible", "false");
+    xPos += leftX.rangeBand() + 2;
   }
 };
 
@@ -400,7 +441,7 @@ function drawDataInGrid(svg, dataset) {
       })
       .attr("height", d => (d / maxValue) * boxWidth)
       .attr("x", function(d) {
-        console.log(country, d);
+        // console.log(country, d);
         let pos = xCenter - (d / maxValue) * (boxWidth / 2);
         xCenter += boxWidth + boxXMargin;
         return pos;
@@ -432,7 +473,6 @@ var getMaxYValue = function(data) {
   let loopObj;
   for (let i in data) {
     loopObj = data[i];
-    // console.log(loopObj);
     for (let y in years) {
       let year = years[y];
       if (loopObj[year] > maxVal) {
