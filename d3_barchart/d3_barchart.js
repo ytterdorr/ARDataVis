@@ -350,39 +350,6 @@ function makeCountryIndexed(dataset) {
   return byCountry;
 }
 
-var drawSquares = function(svg, dataset) {
-  // Draw the square grid that frames the data
-  let xPos;
-  let yAxisMargin = 40;
-  let boxMargin = 8;
-  let boxYMargin = 6;
-
-  let squareWidth = x.rangeBand() - boxMargin - 2;
-  let squareHeight = leftY.rangeBand() - boxYMargin;
-  let y = boxYMargin;
-
-  // let countryIndexed = makeCountryIndexed(dataset);
-  // let country;
-  for (let c in countries) {
-    xPos = yAxisMargin + boxMargin;
-    country = countries[c];
-    for (let i = 0; i < 9; i++) {
-      svg
-        .append("rect")
-        .attr("width", squareWidth)
-        .attr("height", squareHeight)
-        .attr("x", xPos)
-        .attr("y", y)
-        .attr("fill", "none")
-        .attr("stroke", "black");
-      // Update x pos
-      xPos += squareWidth + boxMargin - 1;
-    }
-    // Update y pos
-    y += squareHeight + boxYMargin + 2;
-  }
-};
-
 // Draw data
 function drawDataInGrid(svg, dataset) {
   let countryIndexed = makeCountryIndexed(dataset);
@@ -390,8 +357,8 @@ function drawDataInGrid(svg, dataset) {
   let yAxisMargin = 40;
   let xCenter;
   let yCenter = 22;
-  let boxWidth = 28;
   let boxXMargin = 9;
+  let boxWidth = leftX.rangeBand() - boxXMargin + 2;
   let boxYMargin = 10;
   let maxValue = YMAX; //getMaxYValue(dataset);
   let country;
@@ -400,6 +367,29 @@ function drawDataInGrid(svg, dataset) {
     color = colors[i];
     xCenter = yAxisMargin + boxXMargin + boxWidth / 2;
 
+    // Draw background grid
+    svg
+      .selectAll(country + "Data")
+      .data(countryIndexed[country])
+      .enter()
+      .append("rect")
+      .attr("width", function(d) {
+        return boxWidth;
+      })
+      .attr("height", d => boxWidth)
+      .attr("x", function(d) {
+        let pos = xCenter - boxWidth / 2;
+        xCenter += boxWidth + boxXMargin;
+        return pos;
+      })
+      .attr("y", d => yCenter - boxWidth / 2)
+      .attr("fill", "none")
+      .attr("stroke", "black");
+
+    // Reset center
+    xCenter = yAxisMargin + boxXMargin + boxWidth / 2;
+
+    // Draw data squares
     svg
       .selectAll(country + "Data")
       .data(countryIndexed[country])
@@ -497,7 +487,7 @@ d3.csv(csvFile, function(error, data) {
 
   // let reorderedData = makeCountryIndexed(data);
   drawLeftAxes();
-  drawSquares(left_svg, dataset);
+  // drawSquares(left_svg, dataset);
   drawDataInGrid(left_svg, dataset);
   drawRects(left_svg, dataset);
 
