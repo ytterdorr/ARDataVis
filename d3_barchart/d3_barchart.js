@@ -1,5 +1,5 @@
 var csvFile = "../test.csv";
-var currentCountry = "Gambia";
+var currentCountry = "Australia";
 var YMAX = 100;
 let dataset;
 let years;
@@ -92,7 +92,7 @@ var drawBars = function(svg, data) {
     .attr("class", "y axis")
     .call(yAxis)
     .append("text")
-    .attr("id", "yCountryName")
+    .attr("id", "yName")
     .attr("transform", "rotate(-90)")
     .attr("y", 6)
     .attr("dy", ".71em")
@@ -136,12 +136,73 @@ var selectRectangle = function() {
   console.log(d3.select(this).attr("country"));
 };
 
+var drawCountryBars = function(countryData, countryName) {
+  // This is just a copy of the updateBars function.
+  // Since I also want to be able to do this by years.
+  let svg = right_svg;
+
+  // update yAxis name
+  let yText = svg.selectAll("#yName").text(countryName);
+  console.log("yText", yText);
+  // Update bars
+  let olds = svg
+    .selectAll("rect")
+    .data(countryData)
+    .attr("x", function(d) {
+      return x(d.year);
+    })
+    .attr("width", x.rangeBand())
+    .attr("y", function(d) {
+      return y(d.value);
+    })
+    .attr("height", function(d) {
+      return height - y(d.value);
+    });
+};
+
+function showYearData() {
+  /* This function should change the right side
+   * diagram to show all countries from a certain year
+   * instead of all years for a certain country.
+   */
+
+  let year = "2011";
+  // Update x labels
+  x.domain(countries);
+  right_svg
+    .select(".x")
+    .call(xAxis)
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", "-.55em")
+    .attr("transform", "rotate(-90)");
+
+  // update Y axis name
+  right_svg.select("#yName").text("2018");
+
+  // Get year data.
+  // console.log("dataset:", dataset);
+  let yearData = [];
+  for (d of dataset) {
+    // console.log(d.country);
+    let country = d.country;
+    let obj = {};
+    obj.country = d.country;
+    obj.data = d[year];
+    console.log(obj);
+    yearData.push(obj);
+
+    // Continue HERE
+  }
+}
+
 var updateBars = function(countryData, countryName) {
   let svg = right_svg;
 
   // update yAxis name
 
-  let yText = svg.selectAll("#yCountryName").text(countryName);
+  let yText = svg.selectAll("#yName").text(countryName);
   console.log("yText", yText);
   // Update bars
   let olds = svg
@@ -167,9 +228,6 @@ var drawRects = function(svg, dataset) {
   let rectHeight = height / 10;
   let rectWidth = height + 18;
   let y = 7;
-
-  // Draw the axes
-  drawLeftAxis();
 
   for (let i in countries) {
     country = countries[i];
@@ -213,7 +271,7 @@ var drawRects = function(svg, dataset) {
   }
 };
 
-function drawLeftAxis() {
+function drawLeftAxes() {
   let svg = left_svg;
   let yAxisMargin = 40;
   svg
@@ -233,8 +291,6 @@ function drawLeftAxis() {
     .attr("dy", "-.55em")
     .attr("transform", "rotate(-90)");
 }
-
-function makeNamesClickable() {}
 
 // Transfrom the dataset to a dictionary
 // {country: [data]}
@@ -394,10 +450,11 @@ d3.csv(csvFile, function(error, data) {
   drawBars(right_svg, countryData);
 
   // let reorderedData = makeCountryIndexed(data);
-  drawLeftAxis();
+  drawLeftAxes();
   drawSquares(left_svg, dataset);
   drawDataInGrid(left_svg, dataset);
   drawRects(left_svg, dataset);
+  showYearData();
 
   // Toggle loading screen
   document.querySelector(".loadingscreen").classList.add("invisible");

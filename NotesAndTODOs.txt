@@ -16,7 +16,7 @@ TODO:
 - 2 fields, 10 rows. 
 =0= Load from file.
 =0= square size differs with value.
-- Make years and countries clickable
+=> Make years and countries clickable
   - Mark both vertical or horizontal lines
   - Load year data for all countries (and keep colors)  
 - Change to better colors. 

@@ -1,7 +1,8 @@
 ## Perhaps started this too late, but better late than never.
-Date # START #  END  # Activity #
--    : 14.14 : 14.35 : Read Visualization book.
-     : 14.42 : 15.00 : Read Visualization book.
--    : 15.20 : 16.00 : Read visualization book.
+Date  # START #  END  # Activity #
+-     : 14.14 : 14.35 : Read Visualization book.
+      : 14.42 : 15.00 : Read Visualization book.
+-     : 15.20 : 16.00 : Read visualization book.
 
 
+02/03 : 00:57 : 02:18 : Make country name clickable. Started working on displaying by years.  
