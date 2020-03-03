@@ -5,7 +5,7 @@ TODO:
 - Refactor code. put JS in separate file? 
  - separate bar/text creation from scene add. 
 =x (Implement use of 2nd marker.)
-- Use 10 countries? Change to same countries and years as example article. (25 min)
+=0= Use 10 countries? Change to same countries and years as example article. (25 min)
 
 # 3D on screen
 - Implement same three.js as in AR.
@@ -13,10 +13,10 @@ TODO:
 
 # 2D
 =0> Use D3.JS
-- 2 fields, 10 rows. 
+=0= 2 fields, 10 rows. 
 =0= Load from file.
 =0= square size differs with value.
-=> Make years and countries clickable
+=0= Make years and countries clickable
   - Mark both vertical or horizontal lines
   - Load year data for all countries (and keep colors)  
 - Change to better colors. 

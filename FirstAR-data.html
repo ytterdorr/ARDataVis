@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>Hello, AR Cube!</title>
+	<title>AR Bar Graph</title>
 	<!-- include three.js library -->
 	<script src='js/three.js'></script>
 	<!-- include jsartookit -->
@@ -152,6 +152,7 @@ function initialize()
 
   // markerRoot1.add(firstBar)
   
+  /***** How the bars are created *****/
   function createBar(height, xPos, zPos, rgbColor) {
     
     let barWidth = 0.09;
@@ -178,7 +179,7 @@ function initialize()
     
   }
 
-  // Text stuff
+  /***** Make text *****/
   function createText(text, color="black") {
     var bitmap = document.createElement('canvas');
     var g = bitmap.getContext('2d');
@@ -202,18 +203,19 @@ function initialize()
     return textPlane;
   }
 
-  // Insert Country data
-  let barMax = 100
+  /***** Insert country data ****/
+  let barMax = 100 // How to make this variable?
   function insertCountryData(countryData, markerRoot=markerRoot1) {
     console.log("Insert country data")
     console.log(countryData)
-    let zPos = -0.5
+    let zPos = -0.55 // What does this 
+
     for (let elem in countryData) {
-      zPos += 0.11
+      zPos += 0.1
       let country  = countryData[elem]
       // console.log(country)
       for (let i=0; i<=9; i++) {
-        let xPos = -0.4 + i/10;
+        let xPos = -0.45 + i/10 - 0.01;
         let height = country.barData[i]/barMax;
         let color = country.barColor
         // Create bars
@@ -232,9 +234,9 @@ function initialize()
   }
   
  
-
-  // Lines
-  let lineMaterial = new THREE.LineBasicMaterial({
+function createSupportLines() {
+    // Lines
+    let lineMaterial = new THREE.LineBasicMaterial({
 	  color: 0x0000ff,
     linewidth: 0.2,
     opacity: 0.5,
@@ -278,29 +280,33 @@ function initialize()
   markerRoot1.add(topValue2)
   markerRoot1.add(midValue1)
   markerRoot1.add(midValue2)
+}
 
-  // Add Years
+
+
+
+function  addYears() {
   let x = -0.4;
-  for (let year = 2010; year<=2018; year++) {
+  for (let year = 1989; year<=1998; year++) {
     let text = createText(" - " +year.toString());
     text.position.z = 0.65;
     text.position.y = 0.001
     text.position.x = x;
     text.rotation.x = -Math.PI/2;
     text.rotation.z = -Math.PI/2;
-    // // text.rotation.x = -Math.PI/2;
-    // if (year%2 == 0) {
-    //   text.position.z = 0.6;
-    // }
     markerRoot1.add(text);
     x += 0.1;
   }
+}
+ 
 
 
-  // Create title
+function createTitle() {
   let title = createText("Life Expectancy", "white");
   title.position.y = 1.2;
   markerRoot1.add(title);
+}
+
 
   // Base
   let baseGeometry = new THREE.CubeGeometry(1,0,1);
@@ -320,9 +326,9 @@ function initialize()
   // Basiclly load the data graph.
   let rows = data.split("\n");
   // Skip the index row
-  rows = rows.slice(1, 9)
+  rows = rows.slice(1)
   let countryData = {}
-  let colors = ["blue", "yellow", "red", "green", "skyblue", "olive", "orchid", "silver", "tomato"]
+  let colors = ["blue", "yellow", "red", "green", "skyblue", "olive", "orchid", "silver", "tomato", "purple"]
   let colorIndex = 0;
   
   // Get row data
@@ -344,7 +350,9 @@ function initialize()
 
 function build3DGraph(data) {
   let countryData = parseDataToObject(data);
+  createSupportLines();
   insertCountryData(countryData);
+  addYears();
 }
 
 /****************
@@ -366,7 +374,7 @@ let getData = function(fileURL) {
   })
 }
 
-getData("test.csv")
+getData("test_LE.csv")
 }
 
 
