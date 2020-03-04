@@ -46,6 +46,23 @@
       markerRoot1.rotation.y = Math.PI / 4;
       scene.add(markerRoot1);
 
+      // Add rotation listener
+      document.addEventListener("keydown", function(e) {
+        rotationSpeed = 0.03;
+        if (e.key === "ArrowRight") {
+          markerRoot1.rotation.y -= rotationSpeed;
+        }
+        if (e.key === "ArrowLeft") {
+          markerRoot1.rotation.y += rotationSpeed;
+        }
+        if (e.key === "ArrowUp") {
+          markerRoot1.rotation.x += rotationSpeed;
+        }
+        if (e.key === "ArrowDown") {
+          markerRoot1.rotation.x -= rotationSpeed;
+        }
+      });
+
       /***** How the bars are created *****/
       function createBar(height, xPos, zPos, rgbColor) {
         let barWidth = 0.09;
@@ -82,10 +99,11 @@
       }
 
       /***** Make text *****/
-      function createText(text, color = "black") {
+      function createText(text, color = "black", widthMult = 1) {
+        console.log(widthMult);
         var bitmap = document.createElement("canvas");
         var g = bitmap.getContext("2d");
-        bitmap.width = 128;
+        bitmap.width = 128 * widthMult;
         bitmap.height = 32;
         g.fillStyle = sceneHexColor;
         g.fillRect(0, 0, bitmap.width, bitmap.height);
@@ -100,11 +118,12 @@
         texture.needsUpdate = true;
 
         var textMaterial = new THREE.MeshBasicMaterial({
-          map: texture
+          map: texture,
+          side: THREE.DoubleSide
         });
 
         // textMaterial.color.set(0xff0000);
-        var textGeometry = new THREE.PlaneGeometry(0.3, 0.1);
+        var textGeometry = new THREE.PlaneGeometry(0.3 * widthMult, 0.1);
 
         var textPlane = new THREE.Mesh(textGeometry, textMaterial);
         return textPlane;
@@ -160,22 +179,27 @@
         }
 
         // Insert reference values
-        let topValue1 = createText(barMax.toString());
+        let widthMult = 0.5;
+        let text = barMax.toString();
+        let textColor = "black";
+        let topValue1 = createText(text, textColor, widthMult);
         topValue1.position.x = -0.5;
         topValue1.position.y = 1;
         topValue1.position.z = -0.5;
-        let topValue2 = createText(barMax.toString());
+        let topValue2 = createText(text, textColor, widthMult);
         topValue2.position.x = 0.5;
         topValue2.position.z = 0.7;
         topValue2.position.y = 1;
         topValue2.rotation.y = -Math.PI / 2;
 
-        let midValue1 = createText((barMax / 2).toString());
+        // Create mid values
+        text = (barMax / 2).toString();
+        let midValue1 = createText(text, textColor, widthMult);
         midValue1.position.x = -0.5;
         midValue1.position.y = 0.5;
         midValue1.position.z = -0.5;
 
-        let midValue2 = createText((barMax / 2).toString());
+        let midValue2 = createText(text, textColor, widthMult);
         midValue2.position.x = 0.5;
         midValue2.position.y = 0.5;
         midValue2.position.z = 0.7;
