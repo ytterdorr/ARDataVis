@@ -12,3 +12,5 @@ Date  # START #  END  # Activity #
 02/03 : 17.35 : 18:45 : Loaded with 10 countries 10 years
 
 03/3  : 14.45 : 15.30 : Make the AR-representation use 10 countries 10 years.
+
+04/3  : 12.00 : 13.00 : Display 3D barchart in screen. Next: make it spin.
