@@ -8,8 +8,9 @@ TODO:
 =0= Use 10 countries? Change to same countries and years as example article. (25 min)
 
 # 3D on screen
-- Implement same three.js as in AR.
-- implement rotation on scroll? (25 min)
+=0= Implement same three.js as in AR.
+=0= implement rotation on scroll? (25 min) On arrows
+- Add checkmarks for height. 
 
 # 2D
 =0> Use D3.JS

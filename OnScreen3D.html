@@ -212,7 +212,7 @@
       }
 
       function addYears() {
-        let x = -0.4;
+        let x = -0.46;
         for (let year = 1989; year <= 1998; year++) {
           let text = createText(" - " + year.toString());
           text.position.z = 0.65;
@@ -225,10 +225,16 @@
         }
       }
 
-      function createTitle() {
-        let title = createText("Life Expectancy", "white");
-        title.position.y = 1.2;
-        markerRoot1.add(title);
+      function createTitle(title) {
+        let head = document.createElement("h1");
+        head.innerHTML = title;
+        head.classList.add("title");
+        console.log(head);
+
+        let widthMult = 2;
+        let titleRect = createText(title, "white", widthMult);
+        titleRect.position.y = 1.2;
+        markerRoot1.add(titleRect);
       }
 
       // Base
@@ -281,11 +287,14 @@
         return countryData;
       }
 
+      var fileURL = "co2.csv";
+      var dataTitle = "CO2 per capita";
       function build3DGraph(data) {
         let countryData = parseDataToObject(data);
         createSupportLines();
         insertCountryData(countryData);
         addYears();
+        createTitle(dataTitle);
       }
 
       /****************
@@ -307,7 +316,7 @@
         });
       };
 
-      getData("test_LE.csv");
+      getData(fileURL);
 
       function animate() {
         requestAnimationFrame(animate);
