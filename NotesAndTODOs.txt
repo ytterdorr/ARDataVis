@@ -11,7 +11,7 @@ Base on max-min values?
 
 # 3D on screen
 =0= Implement same three.js as in AR.
-=0= implement rotation on scroll? (25 min) On arrows
+=C= implement rotation on scroll? (25 min) On arrows
 - Add checkmarks for height. 
 
 # 2D

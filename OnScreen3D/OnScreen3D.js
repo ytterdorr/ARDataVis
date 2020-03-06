@@ -8,8 +8,8 @@ var camera = new THREE.PerspectiveCamera(
 );
 
 // Set background color
-var sceneHexColor = "#c0c0c0";
-var sceneBackgroundColor = new THREE.Color(0xc0c0c0);
+var sceneHexColor = "#101010";
+var sceneBackgroundColor = new THREE.Color(0x505050);
 scene.background = sceneBackgroundColor;
 
 var renderer = new THREE.WebGLRenderer();
@@ -60,7 +60,7 @@ function createBar(height, xPos, zPos, rgbColor) {
   var material = new THREE.LineBasicMaterial({
     color: 0xaaaaaa,
     linewidth: 1,
-    opacity: 1,
+    opacity: 0.7,
     transparent: true
   });
   var edges = new THREE.LineSegments(edgeGeometry, material);
@@ -80,8 +80,8 @@ function createText(text, color = "black", widthMult = 1) {
   var g = bitmap.getContext("2d");
   bitmap.width = 128 * widthMult;
   bitmap.height = 32;
-  g.fillStyle = sceneHexColor;
-  g.fillRect(0, 0, bitmap.width, bitmap.height);
+  // g.fillStyle = sceneHexColor;
+  // g.fillRect(0, 0, bitmap.width, bitmap.height);
   g.font = "20px Arial";
   g.fillStyle = color;
   g.fillText(text, 0, 20);
@@ -94,7 +94,8 @@ function createText(text, color = "black", widthMult = 1) {
 
   var textMaterial = new THREE.MeshBasicMaterial({
     map: texture,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
+    transparent: true
   });
 
   // textMaterial.color.set(0xff0000);
@@ -106,11 +107,13 @@ function createText(text, color = "black", widthMult = 1) {
 
 /***** Insert country data ****/
 // TODO Set barMax and barMin from config
-let barMax = 100; // How to make this variable?
+let barMax = conf.yMax; // How to make this variable?
+let barMin = conf.yMin;
 function insertCountryData(countryData, markerRoot = markerRoot1) {
   console.log("Insert country data");
-  console.log(countryData);
+  // console.log(countryData);
   let zPos = -0.55; // What does this
+  let yPos = 0.01;
 
   for (let elem in countryData) {
     zPos += 0.1;
@@ -118,7 +121,7 @@ function insertCountryData(countryData, markerRoot = markerRoot1) {
     // console.log(country)
     for (let i = 0; i <= 9; i++) {
       let xPos = -0.45 + i / 10 - 0.01;
-      let height = country.barData[i] / barMax;
+      let height = (country.barData[i] - barMin) / (barMax - barMin);
       let color = country.barColor;
       // Create bars
       let bar = createBar(height, xPos, zPos, color);
@@ -128,7 +131,8 @@ function insertCountryData(countryData, markerRoot = markerRoot1) {
     let name = createText(elem, country.barColor);
     name.position.x = -0.7;
     name.position.z = zPos;
-    name.rotation.x = -Math.PI / 4;
+    name.position.y = yPos;
+    name.rotation.x = -Math.PI / 2;
 
     markerRoot.add(name);
   }
@@ -150,6 +154,19 @@ function createSupportLines() {
       new THREE.Vector3(0.5, height, 0.5)
     );
 
+    let planeGeometry = new THREE.PlaneGeometry(1, 1);
+    let planeMaterial = new THREE.MeshBasicMaterial({
+      color: "gray",
+      opacity: 0.1,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    let plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.rotation.x = Math.PI / 2;
+    plane.position.y = height;
+    // markerRoot1.add(plane);
+
     let line = new THREE.Line(lineGeometry, lineMaterial);
     markerRoot1.add(line);
   }
@@ -169,7 +186,7 @@ function createSupportLines() {
   topValue2.rotation.y = -Math.PI / 2;
 
   // Create mid values
-  text = (barMax / 2).toString();
+  text = (barMax - (barMax - barMin) / 2).toString();
   let midValue1 = createText(text, textColor, widthMult);
   midValue1.position.x = -0.5;
   midValue1.position.y = 0.5;
@@ -181,10 +198,25 @@ function createSupportLines() {
   midValue2.position.z = 0.7;
   midValue2.rotation.y = -Math.PI / 2;
 
+  // Create bottom values
+  text = barMin.toString();
+  let botValue1 = createText(text, textColor, widthMult);
+  botValue1.position.x = -0.5;
+  botValue1.position.y = 0.01;
+  botValue1.position.z = -0.5;
+
+  let botValue2 = createText(text, textColor, widthMult);
+  botValue2.position.x = 0.5;
+  botValue2.position.y = 0.01;
+  botValue2.position.z = 0.7;
+  botValue2.rotation.y = -Math.PI / 2;
+
   markerRoot1.add(topValue1);
   markerRoot1.add(topValue2);
   markerRoot1.add(midValue1);
   markerRoot1.add(midValue2);
+  markerRoot1.add(botValue1);
+  markerRoot1.add(botValue2);
 }
 
 function addYears() {
@@ -214,18 +246,20 @@ function createTitle(title) {
   markerRoot1.add(titleRect);
 }
 
-// Base
-let baseGeometry = new THREE.CubeGeometry(1, 0, 1);
-let baseMaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
-  side: THREE.DoubleSide
-});
+function addBase() {
+  let baseGeometry = new THREE.CubeGeometry(1.45, 0, 1.25);
+  let baseMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide
+  });
 
-var base = new THREE.Mesh(baseGeometry, baseMaterial);
-// base.position.y = 0.05;
+  var base = new THREE.Mesh(baseGeometry, baseMaterial);
+  base.position.x = -0.2;
+  base.position.z = 0.1;
 
-markerRoot1.add(base);
-// markerRoot1.add( firstBar );
+  markerRoot1.add(base);
+  // markerRoot1.add( firstBar );
+}
 
 function parseDataToObject(data) {
   // Basiclly load the data graph.
@@ -266,6 +300,7 @@ function parseDataToObject(data) {
 
 function build3DGraph(data) {
   let countryData = parseDataToObject(data);
+  addBase();
   createSupportLines();
   insertCountryData(countryData);
   addYears();
