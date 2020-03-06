@@ -1,7 +1,9 @@
 
 TODO:
 
-Base on max-min values?
+=0= Base on max-min values?
+-> Sort countries by average value
+- Make the same graph creator available in both AR and 3D on screen. 
 
 # AR:
 - Refactor code. put JS in separate file? 
@@ -25,7 +27,7 @@ Base on max-min values?
 - Change to better colors. 
 
 
-Notes:
+Links:
 https://d3-wiki.readthedocs.io/zh_CN/master/Ordinal-Scales/
 https://www.dashingd3js.com/lessons/basic-chart-bar-chart
 https://www.dashingd3js.com/intermediate-d3-course
