@@ -17,4 +17,4 @@ Date  # START #  END  # Activity #
 04/3  : 17.00 : 17.30 : Made it spin.
 
 06/3  : 11.45 : 13.15 : Done some updates on min-max values, and general works on 3D graph.
-06/3  : 13.35 : 14.05 : Made creation of 3D graph into separate file. Should be able to use for AR as well now.
+06/3  : 13.35 : 14.10 : Made creation of 3D graph into separate file. Should be able to use for AR as well now.

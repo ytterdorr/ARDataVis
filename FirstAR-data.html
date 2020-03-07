@@ -13,6 +13,8 @@
 	<script src="threex/threex-arbasecontrols.js"></script>
   <script src="threex/threex-armarkercontrols.js"></script>
   <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="config.js"></script>
+  <script src="build3DGraph.js"></script>
 </head>
 
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
@@ -31,7 +33,7 @@ var scene, camera, renderer, clock, deltaTime, totalTime;
 
 var arToolkitSource, arToolkitContext;
 
-var markerRoot1, markerRoot2;
+var markerRoot1, markerRootA;
 
 var mesh1;
 
@@ -116,265 +118,45 @@ function initialize()
 		type: 'pattern', patternUrl: "data/hiro.patt",
 	})
 
-  markerRoot2 = new THREE.Group();
-	scene.add(markerRoot2);
-	let markerControls2 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot2, {
+  markerRootA = new THREE.Group();
+	scene.add(markerRootA);
+	let markerControlsA = new THREEx.ArMarkerControls(arToolkitContext, markerRootA, {
 		type: 'pattern', patternUrl: "data/letterA.patt",
-	})
-
-
-	// let geometry1	= new THREE.CubeGeometry(1,1,1);
-	// let material1	= new THREE.MeshBasicMaterial({
-  //   color: 0xFFFFFF,
-	// 	side: THREE.DoubleSide
-	// }); 
+  })
   
-    /* TODO:
-  - Set up base
-  - set up text
-  - create barcreating function
-  - set up support lines
-  - import data
-  */
-  // First bar
-  // let barWidth = 0.09;
-  // let barHeight = 0.5;
-  // let barDepth = 0.09;
-  // let firstBarGeometry = new THREE.CubeGeometry(barWidth, barHeight, barDepth);
-  // let firstBarMaterial = new THREE.MeshBasicMaterial({
-  //   color: 0xFF0000
-  // });
-
-  // let firstBar = new THREE.Mesh( firstBarGeometry, firstBarMaterial)
-  // firstBar.position.y = barHeight/2;
-  // firstBar.position.x = -0.4;
-  // firstBar.position.z = -0.4;
-
-  // markerRoot1.add(firstBar)
-  
-  /***** How the bars are created *****/
-  function createBar(height, xPos, zPos, rgbColor) {
-    
-    let barWidth = 0.09;
-    let barHeight = height;
-    let barDepth = 0.09;
-    let firstBarGeometry = new THREE.CubeGeometry(barWidth, barHeight, barDepth);
-    let firstBarMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(rgbColor),
-      opacity: 0.8,
-      transparent: true
-    });
-    
-    // Add edges
-    let firstBar = new THREE.Mesh( firstBarGeometry, firstBarMaterial)
-    let edgeGeometry = new THREE.EdgesGeometry( firstBar.geometry ); // or WireframeGeometry
-    var material = new THREE.LineBasicMaterial( { color: 0xAAAAAA, linewidth: 1, opacity: 1, transparent: true } );
-    var edges = new THREE.LineSegments( edgeGeometry, material );
-    firstBar.add( edges ); // add wireframe as a child of the parent mesh
-    firstBar.position.y = barHeight/2;
-    firstBar.position.x = xPos;
-    firstBar.position.z = zPos;
-
-    return firstBar
-    
-  }
-
-  /***** Make text *****/
-  function createText(text, color="black") {
-    var bitmap = document.createElement('canvas');
-    var g = bitmap.getContext('2d');
-    bitmap.width = 128;
-    bitmap.height = 32;
-    g.font = '20px Arial';
-
-    g.fillStyle = color;
-    g.fillText(text, 0, 20);
-    g.strokeStyle = 'black';
-    g.strokeText(text, 0, 20);
-
-    // canvas contents will be used for a texture
-    var texture = new THREE.Texture(bitmap) 
-    texture.needsUpdate = true;
-
-    var textMaterial = new THREE.MeshBasicMaterial({ map: texture});
-    var textGeometry = new THREE.PlaneGeometry(0.3, 0.1)
-
-    var textPlane = new THREE.Mesh(textGeometry, textMaterial)
-    return textPlane;
-  }
-
-  /***** Insert country data ****/
-  let barMax = 100 // How to make this variable?
-  function insertCountryData(countryData, markerRoot=markerRoot1) {
-    console.log("Insert country data")
-    console.log(countryData)
-    let zPos = -0.55 // What does this 
-
-    for (let elem in countryData) {
-      zPos += 0.1
-      let country  = countryData[elem]
-      // console.log(country)
-      for (let i=0; i<=9; i++) {
-        let xPos = -0.45 + i/10 - 0.01;
-        let height = country.barData[i]/barMax;
-        let color = country.barColor
-        // Create bars
-        let bar = createBar(height, xPos, zPos, color)
-        markerRoot.add(bar)
-      }
-
-      let name = createText(elem, country.barColor); 
-      name.position.x = -0.7
-      name.position.z = zPos;
-      name.rotation.x = -Math.PI/4
-
-      markerRoot.add(name);
-
-    }
-  }
-  
- 
-function createSupportLines() {
-    // Lines
-    let lineMaterial = new THREE.LineBasicMaterial({
-	  color: 0x0000ff,
-    linewidth: 0.2,
-    opacity: 0.5,
-    transparent: true
-  });
-  for (let height = 0; height<= 1; height+= 0.1) {
-    let lineGeometry = new THREE.Geometry();
-      lineGeometry.vertices.push(
-      new THREE.Vector3( -0.5, height, -0.5 ),
-      new THREE.Vector3( 0.5, height, -0.5 ),
-      new THREE.Vector3( 0.5, height, 0.5 )
-    );
-
-    let line = new THREE.Line( lineGeometry, lineMaterial );
-    markerRoot1.add( line );
-  }
-
-  // Insert reference values
-  let topValue1 = createText(barMax.toString());
-  topValue1.position.x = -0.5;
-  topValue1.position.y = 1;
-  topValue1.position.z = -0.5;
-  let topValue2 = createText(barMax.toString());
-  topValue2.position.x = 0.5;
-  topValue2.position.z = 0.7;
-  topValue2.position.y = 1;
-  topValue2.rotation.y = -Math.PI/2;
-
-  let midValue1 = createText((barMax/2).toString())
-  midValue1.position.x = -0.5;
-  midValue1.position.y = 0.5;
-  midValue1.position.z = -0.5;
-
-  let midValue2 = createText((barMax/2).toString())
-  midValue2.position.x = 0.5;
-  midValue2.position.y = 0.5;
-  midValue2.position.z = 0.7;
-  midValue2.rotation.y = -Math.PI/2;
-  
-  markerRoot1.add(topValue1)
-  markerRoot1.add(topValue2)
-  markerRoot1.add(midValue1)
-  markerRoot1.add(midValue2)
-}
+  markerRootB = new THREE.Group();
+	scene.add(markerRootB);
+	let markerControlsB = new THREEx.ArMarkerControls(arToolkitContext, markerRootB, {
+		type: 'pattern', patternUrl: "data/letterB.patt",
+  })
 
 
-
-
-function  addYears() {
-  let x = -0.4;
-  for (let year = 1989; year<=1998; year++) {
-    let text = createText(" - " +year.toString());
-    text.position.z = 0.65;
-    text.position.y = 0.001
-    text.position.x = x;
-    text.rotation.x = -Math.PI/2;
-    text.rotation.z = -Math.PI/2;
-    markerRoot1.add(text);
-    x += 0.1;
-  }
-}
- 
-
-
-function createTitle() {
-  let title = createText("Life Expectancy", "white");
-  title.position.y = 1.2;
-  markerRoot1.add(title);
-}
-
-
-  // Base
-  let baseGeometry = new THREE.CubeGeometry(1,0,1);
-	let baseMaterial	= new THREE.MeshBasicMaterial({
-    color: 0xFFFFFF,
-		side: THREE.DoubleSide
-	}); 
-  
-	var base = new THREE.Mesh( baseGeometry, baseMaterial );
-	// base.position.y = 0.05;
-	
-	markerRoot1.add( base );
-	// markerRoot1.add( firstBar );
-
-
-  function parseDataToObject(data) {
-  // Basiclly load the data graph.
-  let rows = data.split("\n");
-  // Skip the index row
-  rows = rows.slice(1)
-  let countryData = {}
-  let colors = ["blue", "yellow", "red", "green", "skyblue", "olive", "orchid", "silver", "tomato", "purple"]
-  let colorIndex = 0;
-  
-  // Get row data
-  for (let i in rows) { 
-    row = rows[i].split(",")
-    let countryName = row[0]; 
-    let data = row.slice(1)
-    // Store in countryData object
-    countryData[countryName] = {
-      barData: data,
-      barColor: colors[colorIndex]
-    }
-    // Update color index
-    colorIndex += 1;
-  } 
-  // console.log(countryData)
-  return countryData;
-}
-
-function build3DGraph(data) {
-  let countryData = parseDataToObject(data);
-  createSupportLines();
-  insertCountryData(countryData);
-  addYears();
-}
 
 /****************
 * Load the data * 
 ****************/
 
-console.log("TODO load data")
-let getData = function(fileURL) {
+// console.log("TODO load data")
+// var fileURL = conf.fileURL;
+// var dataTitle = conf.title;
+/* 
+*/
+let getData = function(confObj, marker) {
   $.ajax({
-    url: fileURL,
+    url: confObj.fileURL,
     success: function(data) {
       // Parse data
       console.log("Got some file")
       // console.log(data)
-      build3DGraph(data)
+      build3DGraph(data, confObj, marker)
     }
   }).fail(function() {
     console.log("Failed to get data")
   })
 }
-
-getData("test_LE.csv")
+getData(confs.co2, markerRoot1)
+getData(confs.LifeExp, markerRootA)
+getData(confs.Suicide, markerRootB)
 }
 
 

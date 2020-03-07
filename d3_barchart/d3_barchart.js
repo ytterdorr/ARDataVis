@@ -1,6 +1,7 @@
-var csvFile = "../test_LE.csv";
-var currentCountry = "Australia";
-var YMAX = 100;
+let conf = confs.co2;
+var csvFile = "../" + conf.fileURL;
+let currentCountry = "Australia";
+let YMAX = conf.yMax;
 let dataset;
 let years;
 let countries;
@@ -533,7 +534,7 @@ d3.csv(csvFile, function(error, data) {
   leftY.domain(countries);
 
   dataset = data;
-  let countryData = getDataByCountry(data, currentCountry);
+  let countryData = getDataByCountry(data, "Australia");
 
   // Draw the bars
   drawRightAxes();

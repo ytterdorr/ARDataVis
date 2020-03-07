@@ -64,16 +64,30 @@ function createText(text, color = "black", widthMult = 1) {
 /***** Insert country data ****/
 // TODO Set barMax and barMin from config
 
-function insertCountryData(countryData, threeGroup = markerGroup) {
+function insertCountryData(countryData, conf, threeGroup = markerGroup) {
   console.log("Insert country data");
   let barMax = conf.yMax; // How to make this variable?
   let barMin = conf.yMin;
   let zPos = -0.55; // What does this
   let yPos = 0.01;
 
-  for (let elem in countryData) {
+  // Sort countries by average data.
+  let arr = [];
+  for (let country in countryData) {
+    // Sort by average size
+    let avgObj = {};
+    avgObj.name = country;
+    avgObj.avg = arrAvg(countryData[country].barData);
+    arr.push(avgObj);
+  }
+  arr.sort((a, b) => {
+    return a.avg < b.avg ? 1 : -1;
+  });
+
+  for (let elem in arr) {
     zPos += 0.1;
-    let country = countryData[elem];
+    let countryName = arr[elem].name;
+    let country = countryData[countryName];
     // console.log(country)
     for (let i = 0; i <= 9; i++) {
       let xPos = -0.45 + i / 10 - 0.01;
@@ -84,7 +98,7 @@ function insertCountryData(countryData, threeGroup = markerGroup) {
       threeGroup.add(bar);
     }
 
-    let name = createText(elem, country.barColor);
+    let name = createText(countryName, country.barColor);
     name.position.x = -0.7;
     name.position.z = zPos;
     name.position.y = yPos;
@@ -94,7 +108,7 @@ function insertCountryData(countryData, threeGroup = markerGroup) {
   }
 }
 
-function addSupportLines(threeGroup) {
+function addSupportLines(conf, threeGroup) {
   let barMax = conf.yMax;
   let barMin = conf.yMin;
   // Lines
@@ -193,9 +207,9 @@ function addYears(threeGroup) {
 
 function addTitle(title, threeGroup) {
   let head = document.createElement("h1");
-  head.innerHTML = title;
-  head.classList.add("title");
-  document.body.append(head);
+  // head.innerHTML = title;
+  // head.classList.add("title");
+  // document.body.append(head);
   console.log(head);
 
   let widthMult = 2;
@@ -220,6 +234,9 @@ function addBase(threeGroup) {
 }
 
 function parseDataToObject(data) {
+  /* Result will be something like:
+   *
+   */
   // Basiclly load the data graph.
   let rows = data.split("\n");
   // Skip the index row
@@ -243,6 +260,9 @@ function parseDataToObject(data) {
   for (let i in rows) {
     row = rows[i].split(",");
     let countryName = row[0];
+    if (countryName === "") {
+      continue;
+    }
     let data = row.slice(1);
     // Store in countryData object
     countryData[countryName] = {
@@ -256,11 +276,15 @@ function parseDataToObject(data) {
   return countryData;
 }
 
-function build3DGraph(data, title, markerGroup) {
+let arrAvg = arr => {
+  console.log(arr);
+  return arr.reduce((a, b) => Number(a) + Number(b)) / arr.length;
+};
+function build3DGraph(data, confObj, markerGroup) {
   let countryData = parseDataToObject(data);
   addBase(markerGroup);
-  addSupportLines(markerGroup);
-  insertCountryData(countryData, markerGroup);
+  addSupportLines(confObj, markerGroup);
+  insertCountryData(countryData, confObj, markerGroup);
   addYears(markerGroup);
-  addTitle(title, markerGroup);
+  addTitle(confObj.title, markerGroup);
 }

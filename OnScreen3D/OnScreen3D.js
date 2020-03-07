@@ -8,7 +8,6 @@ var camera = new THREE.PerspectiveCamera(
 );
 
 // Set background color
-var sceneHexColor = "#101010";
 var sceneBackgroundColor = new THREE.Color(0x505050);
 scene.background = sceneBackgroundColor;
 
@@ -27,7 +26,7 @@ scene.add(markerGroup);
 
 // Add rotation listener
 document.addEventListener("keydown", function(e) {
-  rotationSpeed = 0.03;
+  let rotationSpeed = 0.03;
   if (e.key === "ArrowRight") {
     markerGroup.rotation.y -= rotationSpeed;
   }
@@ -45,21 +44,29 @@ document.addEventListener("keydown", function(e) {
 /****************
  * Load the data *
  ****************/
-var fileURL = "../" + conf.fileURL;
-var dataTitle = conf.title;
-let getData = function(fileURL) {
+// var fileURL = "../" + conf.fileURL;
+// var dataTitle = conf.title;
+
+let getData = function(confObj) {
+  // confObj = { fileUrl, title, ymax, ymin }
+
   $.ajax({
-    url: fileURL,
+    url: confObj.fileURL,
     success: function(data) {
-      console.log("Got some file");
-      build3DGraph(data, dataTitle, markerGroup);
+      // console.log("Got some file");
+      build3DGraph(data, confObj, markerGroup);
     }
   }).fail(function() {
     console.log("Failed to get data");
   });
 };
+let conf3D = confs.GDPGrowth;
 
-getData(fileURL);
+// console.log("confs", confs);
+// console.log("conf3D", conf3D);
+
+conf3D.fileURL = "../" + conf3D.fileURL;
+getData(conf3D);
 
 function animate() {
   requestAnimationFrame(animate);
