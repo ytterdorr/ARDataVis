@@ -15,7 +15,7 @@ const confs = {
     fileURL: "csv/suicide.csv",
     title: "Suicide per 100K",
     yMin: 0,
-    yMax: 20
+    yMax: 25
   },
   LabourForce: {
     fileURL: "csv/LabourForce.csv",

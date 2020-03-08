@@ -18,3 +18,6 @@ Date  # START #  END  # Activity #
 
 06/3  : 11.45 : 13.15 : Done some updates on min-max values, and general works on 3D graph.
 06/3  : 13.35 : 14.10 : Made creation of 3D graph into separate file. Should be able to use for AR as well now.
+
+07/3  : 12.30 : 13.00 : Some notes on Pilot.
+08/3  : 00.30 : 03.00 : made it easier to change dataset in flat mode. Still not adjusted for yMin.
