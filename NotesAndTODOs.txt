@@ -1,7 +1,16 @@
 
 TODO:
 
-=0= Base on max-min values?
+# Pilot: 
+- choose 2 datasets to run (co2 and life expectancy, suicede as trial?)
+- make instruction paper. 
+- make answer sheets.
+- make 3 range questions (1 for each dataset)
+- make 3 compare questions
+. make 3 order quesions
+
+# General
+=0> Base on max-min values?
 =0= Sort countries by average value
 =0= Make the same graph creator available in both AR and 3D on screen. 
 

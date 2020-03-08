@@ -313,28 +313,6 @@ function showYearData(year) {
     });
 }
 
-// var updateBars = function(countryData, countryName) {
-//   let svg = right_svg;
-
-//   // update rightYAxis name
-//   let yText = svg.selectAll("#yName").text(countryName);
-
-//   // Update bars
-//   let olds = svg
-//     .selectAll("rect")
-//     .data(countryData)
-//     .attr("x", function(d) {
-//       return rightX(d.year);
-//     })
-//     .attr("width", rightX.rangeBand())
-//     .attr("y", function(d) {
-//       return y(d.value);
-//     })
-//     .attr("height", function(d) {
-//       return height - y(d.value);
-//     });
-// };
-
 var drawRects = function(svg, dataset) {
   let yAxisMargin = 40;
   let rectYMargin = 7;
@@ -435,8 +413,8 @@ function drawDataInGrid(svg, dataset) {
   let yCenter = 22;
   let boxXMargin = 9;
   let boxWidth = leftX.rangeBand() - boxXMargin + 2;
-  let boxYMargin = 6;
   let maxValue = YMAX; //getMaxYValue(dataset);
+  let minValue = YMIN;
   let country;
   for (let i in countries) {
     country = countries[i];
@@ -568,15 +546,25 @@ function getDataPromise(csvFile) {
   });
 }
 
+function addTitle(titleText) {
+  // Check if title already exists, otherwise create new title
+  title = document.getElementById("title");
+  titleHead = title != null ? title : document.createElement("h2");
+  titleHead.id = "title";
+  titleHead.innerHTML = titleText;
+  document.body.append(titleHead);
+}
+
 // This is practically the main function.
 // Reads the csv and calls all the creator functions.
 async function makeGraph(confObj) {
   setConfs(confObj);
+  addTitle(confObj.title);
   // Delete previous graph if there was one
   data = await getDataPromise(csvFile);
   buildGraphFromData(data);
 }
 
 // Try "rapid" change
-makeGraph(confs.co2);
 makeGraph(confs.Suicide);
+makeGraph(confs.co2);

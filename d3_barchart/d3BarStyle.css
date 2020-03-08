@@ -65,5 +65,12 @@
 }
 
 .dataRect {
-  pointer-events: bounding-box; 
+  pointer-events: bounding-box;
+}
+
+#title {
+  position: absolute;
+  width: 100vw;
+  text-align: center;
+  top: 0;
 }
