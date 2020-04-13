@@ -13,6 +13,10 @@ scene.background = sceneBackgroundColor;
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+console.log("Renderer DOM", renderer.domElement);
+renderer.domElement.classList.add("invisible");
+renderer.domElement.classList.add("renderer");
+// renderer.classList.add("renderer");
 document.body.appendChild(renderer.domElement);
 
 // Position camera
@@ -53,19 +57,25 @@ let getData = function(confObj) {
   $.ajax({
     url: confObj.fileURL,
     success: function(data) {
-      // console.log("Got some file");
+      // build datavis
       build3DGraph(data, confObj, markerGroup);
+
+      // Remove loader
+      document.querySelector(".renderer").classList.remove("invisible");
+      document.querySelector(".loadingscreen").classList.add("invisible");
     }
   }).fail(function() {
     console.log("Failed to get data");
   });
 };
-let conf3D = confs.GDPGrowth;
+let conf3D = confs.LifeExp;
 
 // console.log("confs", confs);
 // console.log("conf3D", conf3D);
 
 conf3D.fileURL = "../" + conf3D.fileURL;
+// conf is default form config
+conf.fileURL = "../" + conf.fileURL;
 getData(conf3D);
 
 function animate() {

@@ -44,3 +44,8 @@ https://www.dashingd3js.com/intermediate-d3-course
 http://learnjsdata.com/read_data.html
 
 https://flaviocopes.com/how-to-solve-unexpected-identifier-modules/
+
+https://codelabs.developers.google.com/codelabs/augimg-intro/index.html
+
+# Blender Bar Graph
+https://www.youtube.com/watch?v=1a2Wl46AvP0

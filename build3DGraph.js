@@ -277,7 +277,6 @@ function parseDataToObject(data) {
 }
 
 let arrAvg = arr => {
-  console.log(arr);
   return arr.reduce((a, b) => Number(a) + Number(b)) / arr.length;
 };
 function build3DGraph(data, confObj, markerGroup) {
@@ -287,4 +286,5 @@ function build3DGraph(data, confObj, markerGroup) {
   insertCountryData(countryData, confObj, markerGroup);
   addYears(markerGroup);
   addTitle(confObj.title, markerGroup);
+  // Remove loadingscreen
 }

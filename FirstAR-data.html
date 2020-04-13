@@ -154,9 +154,11 @@ let getData = function(confObj, marker) {
     console.log("Failed to get data")
   })
 }
-getData(confs.co2, markerRoot1)
-getData(confs.LifeExp, markerRootA)
-getData(confs.Suicide, markerRootB)
+
+// "conf" is default defined in config file
+getData(confs.Suicide, markerRoot1)
+// getData(confs.LifeExp, markerRootA)
+// getData(confs.Suicide, markerRootB)
 }
 
 

@@ -1,4 +1,4 @@
-let conf = confs.co2;
+// let conf = confs.co2;
 var csvFile, YMAX, YMIN;
 
 function setConfs(confObj) {
@@ -566,5 +566,5 @@ async function makeGraph(confObj) {
 }
 
 // Try "rapid" change
-makeGraph(confs.Suicide);
-makeGraph(confs.co2);
+makeGraph(conf);
+// makeGraph(confs.co2);

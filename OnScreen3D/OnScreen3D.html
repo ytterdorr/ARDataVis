@@ -6,6 +6,7 @@
       body {
         margin: 0;
       }
+
       canvas {
         display: block;
       }
@@ -17,13 +18,59 @@
         top: 0;
         text-align: center;
       }
+
+      .loadingscreen {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        z-index: 99;
+      }
+
+      .invisible {
+        display: none;
+      }
     </style>
   </head>
   <body>
+    <div class="loadingscreen"><h1>Loading...</h1></div>
     <script src="../js/three.js"></script>
     <script src="../js/jquery-3.4.1.min.js"></script>
     <script src="../config.js"></script>
     <script src="../build3DGraph.js"></script>
+    
     <script src="OnScreen3D.js"></script>
+    <script type="module">
+      var exporter
+        import { GLTFExporter } from "../js/GLTFExporter.js";
+        exporter = new GLTFExporter();
+        console.log("exporter", exporter); 
+        window.exporter = exporter;
+      </script>
+    <script>
+console.log("load exporter")
+    // let exporter = window.exporter
+    // Parse the input and generate the glTF output
+    let exporterWaiter = setInterval(function() {
+      if (window.exporter) {
+        console.log("Yay!")
+        clearTimeout(exporterWaiter)
+        exportScene(exporter)
+      }
+      console.log("Waiting for exporter")
+    }, 2000)
+
+    function exportScene(exporter) {
+      // Parse the input and generate the glTF output
+      let options = {};
+      console.log(scene)
+      exporter.parse( scene, function ( gltf ) {
+        console.log( "gltf?", gltf );
+        downloadJSON( gltf );
+      }, {});
+    }
+    </script>
   </body>
 </html>

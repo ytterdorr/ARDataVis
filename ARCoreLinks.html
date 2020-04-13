@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="js/three.js"></script>
+    <script src="config.js"></script>
+    <script src="build3DGraph.js"></script>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- Avocado -->
+    <a
+      href="intent://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;"
+      >Avocado</a
+    >
+    <script>
+      function addLink(fileName, linkName) {
+        let modelURL = document.domain + "/gltf/" + fileName;
+        // "raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf";
+        let link = `intent://${modelURL}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
+        let a = document.createElement("a");
+        a.href = link;
+        a.innerHTML = linkName;
+        document.body.append(a);
+      }
+
+      addLink("cube.glb", "Cube");
+      addLink("BareBars.glb", "Baaaars!");
+      addLink("ColorBars.glb", "Colorful Bars!");
+    </script>
+  </body>
+</html>

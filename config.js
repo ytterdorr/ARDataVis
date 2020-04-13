@@ -31,4 +31,4 @@ const confs = {
   }
 };
 
-// let conf = confs.co2;
+var conf = confs.co2;
