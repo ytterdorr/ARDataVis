@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR DataVis</title>
+</head>
+
+<body>
+    <h1 class="not-in-toc">AR for data visualization</h1>
+    <p>This is a project page about the use of Augmented Reality for data visualization.</p>
+
+    <h2 id="topics-i-want-to-explore" class="not-in-toc">Topics I would like to explore</h2>
+    <ul id="table-of-contents"></ul>
+
+    <h2 id="short-history-of-visualization">Short history of data visualization and innovation</h2>
+    <h2 id="graphs-in-3d">Graphs in 3D</h2>
+    <h2 id="using-3d-space">Using 3D space</h2>
+    <h3 id="table-size">Table size</h3>
+    <h3 id="room-size-sub">Room size</h3>
+    <h3 id="situated-ar-overlay">Situated data / AR overlays</h3>
+    <h2 id=cognitive-science-and-3d-visualization>Cognitive science of 3D visualization</h2>
+    <h3 id="immersion">Immersion</h3>
+    <h3 id="stereo-depth-perception">Stereo vision/depth perception</h3>
+    <h3 id="does-it-make-a-difference">Does it even make a difference?</h3>
+
+    <script>
+        // Generate Table of contents
+        let headers = document.querySelectorAll("h1:not(.not-in-toc), h2:not(.not-in-toc), h3:not(.not-in-toc)");
+        let toc = document.querySelector("#table-of-contents");
+        console.log(toc)
+        for (header of headers) {
+            // Create a link
+
+            let li = document.createElement("li");
+            if (header.nodeName == "H3") {
+                li.prepend(" - ")
+            }
+            let link = document.createElement("a");
+            link.href = "#" + header.id;
+            link.innerHTML = header.innerText;
+            li.append(link)
+            toc.append(li)
+        }
+        console.log(toc)
+    </script>
+
+
+</body>
+
+</html>
